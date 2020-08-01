@@ -1,22 +1,20 @@
-`use strict`;
+'use strict';
 
-(function() {
-// Точка маршрута.
-//trip-events__item
-function createEventItemTemplate(contentCreater) {
-  return (
-    `<li class="trip-events__item">
+(function () {
+  function createEventItemTemplate(contentCreater) {
+    return (
+      `<li class="trip-events__item">
       <div class="event">
         ${contentCreater()}
       </div>
     </li>
     `
-  );
-}
+    );
+  }
 
-function createEventContentTemplate() {
-  return (
-    `<div class="event">
+  function createEventContentTemplate() {
+    return (
+      `<div class="event">
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/taxi.png" alt="Event type icon">
       </div>
@@ -46,28 +44,27 @@ function createEventContentTemplate() {
         <span class="visually-hidden">Open event</span>
       </button>
     </div>`
-  );
-}
+    );
+  }
 
-function createEventPriceTemplate() {
-  return (
-    `<p class="event__price">
+  function createEventPriceTemplate() {
+    return (
+      `<p class="event__price">
     &euro;&nbsp;<span class="event__price-value">20</span>
   </p>`
-  );
-}
+    );
+  }
 
-function createEventTitleTemplate() {
-  return (
-    `<h3 class="event__title">Taxi to Amsterdam</h3>`
-  );
-}
+  function createEventTitleTemplate() {
+    return (
+      `<h3 class="event__title">Taxi to Amsterdam</h3>`
+    );
+  }
 
-// Форма создания/редактирования (используется одна форма);
-function createEventEditFormTemplate(fullForm = true) {
-  const destination = fullForm ? createEditFormDestinations() : ``;
-  return (
-    `<form class="trip-events__item  event  event--edit" action="#" method="post">
+  function createEventEditFormTemplate(fullForm = true) {
+    const destination = fullForm ? createEditFormDestinations() : ``;
+    return (
+      `<form class="trip-events__item  event  event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -228,11 +225,11 @@ function createEventEditFormTemplate(fullForm = true) {
       ${destination}
     </form>
   `);
-}
+  }
 
-function createEditFormDestinations() {
-  return (
-    `<section class="event__section  event__section--destination">
+  function createEditFormDestinations() {
+    return (
+      `<section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
           <p class="event__destination-description">Geneva is a city in Switzerland that lies at the southern tip of expansive Lac Léman (Lake Geneva). Surrounded by the Alps and Jura mountains, the city has views of dramatic Mont Blanc.</p>
 
@@ -247,14 +244,12 @@ function createEditFormDestinations() {
           </div>
         </section>
     </section>`
-  );
-}
+    );
+  }
 
-// <!-- Сортировка -->
-// Сортировка;
-function createEventsSortTemplate() {
-  return (
-    `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
+  function createEventsSortTemplate() {
+    return (
+      `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
       <span class="trip-sort__item  trip-sort__item--day">Day</span>
 
       <div class="trip-sort__item  trip-sort__item--event">
@@ -284,13 +279,13 @@ function createEventsSortTemplate() {
 
       <span class="trip-sort__item  trip-sort__item--offers">Offers</span>
     </form>`
-  );
-}
+    );
+  }
 
-window.tripEvents = {
-  createItemTemplate : createEventItemTemplate,
-  createContentTemplate : createEventContentTemplate,
-  createEditFormTemplate : createEventEditFormTemplate,
-  createSortTemplate : createEventsSortTemplate
-};
+  window.tripEvents = {
+    createItemTemplate: createEventItemTemplate,
+    createContentTemplate: createEventContentTemplate,
+    createEditFormTemplate: createEventEditFormTemplate,
+    createSortTemplate: createEventsSortTemplate
+  };
 })();

@@ -1,33 +1,33 @@
-`use strict`;
+'use strict';
 
-(function() {
-// trip-days container
-function createDaysContainerTemplate() {
-  return (
-    `<ul class="trip-days">
-      ${createDayItemTemplate()}
-    </ul>`
-  );
-}
+(function () {
+  // trip-days container
+  function createDaysContainerTemplate() {
+    return (
+      `<ul class="trip-days">
+        ${createDayItemTemplate()}
+      </ul>`
+    );
+  }
 
-// day container
-function createDayItemTemplate() {
-  return (
-    `<li class="trip-days__item  day">
-      <div class="day__info">
-        <span class="day__counter">1</span>
-        <time class="day__date" datetime="2019-03-18">MAR 18</time>
-      </div>
+  // day container
+  function createDayItemTemplate() {
+    return (
+      `<li class="trip-days__item  day">
+        <div class="day__info">
+          <span class="day__counter">1</span>
+          <time class="day__date" datetime="2019-03-18">MAR 18</time>
+        </div>
 
-      <ul class="trip-events__list">
+        <ul class="trip-events__list">
 
-      </ul>
-    </li>`
-  );
-}
+        </ul>
+      </li>`
+    );
+  }
 
-window.tripDays = {
-  createContainerTemplate : createDaysContainerTemplate,
-};
+  window.tripDays = {
+    createContainerTemplate: createDaysContainerTemplate,
+  };
 
 })();

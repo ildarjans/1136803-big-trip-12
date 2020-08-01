@@ -1,6 +1,6 @@
-`use strict`;
+'use strict';
 
-(function() {
+(function () {
   function createInfoTemplate() {
     return (
       `<section class="trip-main__trip-info  trip-info">
@@ -49,17 +49,17 @@
     );
   }
 
-    function createControlsTemplate() {
-      return (
-        `${createInfoTemplate()}
+  function createControlsTemplate() {
+    return (
+      `${createInfoTemplate()}
         <div class="trip-main__trip-controls  trip-controls">
           <h2 class="visually-hidden">Switch trip view</h2>
             ${createNavTabsTemplate()}
           <h2 class="visually-hidden">Filter events</h2>
             ${createFiltersTemplate()}
         </div>`
-      );
-    }
+    );
+  }
 
 
   window.tripMenu = {
