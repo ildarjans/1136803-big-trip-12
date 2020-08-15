@@ -19,4 +19,3 @@ export function getRandomArrayElements(arr, count) {
 export function render(container, content, place = `beforeend`) {
   container.insertAdjacentHTML(place, content);
 }
-
