@@ -1,3 +1,4 @@
+import {createDOMElement} from '../utils/render.js';
 import {getFormDateString} from '../utils/date.js';
 
 import {
@@ -6,7 +7,7 @@ import {
   CITIES
 } from '../consts.js';
 
-export function createEventEditFormTemplate(trip, includeDestination = true) {
+function createEventEditFormTemplate(trip, includeDestination = true) {
   const {
     type,
     city,
@@ -208,4 +209,26 @@ function createPhotosTemplate(photos) {
       src="${photo}"
       alt="Event photo"></img>`;
   }).join(``);
+}
+
+export default class EventForm {
+  constructor(trip, destination = true) {
+    this._element = null;
+    this._trip = trip;
+    this._destination = destination;
+  }
+  _getTemplate() {
+    return createEventEditFormTemplate(this._trip, this._destination);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createDOMElement(this._getTemplate());
+    }
+    return this._element;
+  }
+
+  resetElement() {
+    this._element = null;
+  }
 }

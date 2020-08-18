@@ -1,4 +1,6 @@
-export function createSortTemplate() {
+import {createDOMElement} from '../utils/render.js';
+
+function createSortTemplate() {
   return (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
     <span class="trip-sort__item  trip-sort__item--day">Day</span>
@@ -33,3 +35,22 @@ export function createSortTemplate() {
   );
 }
 
+export default class TripSort {
+  constructor() {
+    this._element = null;
+  }
+  _getTemplate() {
+    return createSortTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createDOMElement(this._getTemplate());
+    }
+    return this._element;
+  }
+
+  resetElement() {
+    this._element = null;
+  }
+}

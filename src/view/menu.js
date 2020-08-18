@@ -1,3 +1,5 @@
+import {createDOMElement} from '../utils/render.js';
+
 function createInfoTemplate() {
   return (
     `<section class="trip-main__trip-info  trip-info">
@@ -46,7 +48,7 @@ function createNavTabsTemplate() {
   );
 }
 
-export function createControlsTemplate() {
+function createControlsTemplate() {
   return (
     `${createInfoTemplate()}
       <div class="trip-main__trip-controls  trip-controls">
@@ -57,3 +59,24 @@ export function createControlsTemplate() {
       </div>`
   );
 }
+
+export default class TripMenu {
+  constructor() {
+    this._element = null;
+  }
+  _getTemplate() {
+    return createControlsTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createDOMElement(this._getTemplate());
+    }
+    return this._element;
+  }
+
+  resetElement() {
+    this._element = null;
+  }
+}
+
