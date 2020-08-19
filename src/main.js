@@ -6,7 +6,7 @@ import DayItem from './view/day-item.js';
 import EventList from './view/event-list.js';
 import EventItem from './view/event-item.js';
 import EventForm from './view/event-edit-form.js';
-import {render, getDOMElement, renderElement} from './utils/render.js';
+import {renderElement} from './utils/render.js';
 import {sortTripsByDate, isSameDate} from './utils/date.js';
 import {genereteMockTrips} from './mock/trip.js';
 
@@ -35,7 +35,7 @@ function renderTrips(tripsArr) {
   let eventsList;
   let daysCounter = 0;
 
-  sortedTrips.forEach((trip, index) => {
+  sortedTrips.forEach((trip) => {
     const tripDay = trip.schedule.start;
 
     // is same day add new events
@@ -47,14 +47,42 @@ function renderTrips(tripsArr) {
       renderElement(daysContainer, dayItem);
       lastDay = tripDay;
     }
-    // temperary statement
-    const eventItem = index === 0 ?
-      new EventForm(trip).getElement() :
-      new EventItem(trip).getElement();
-    renderElement(eventsList, eventItem);
+
+    renderEventComponent(eventsList, trip);
 
   });
 
   renderElement(tripEvents, daysContainer);
+
+}
+
+function renderEventComponent(container, trip) {
+  const eventItem = new EventItem(trip).getElement();
+  const eventForm = new EventForm(trip).getElement();
+
+  renderElement(container, eventItem);
+
+  function switchToEventForm() {
+    container.replaceChild(eventForm, eventItem);
+  }
+
+  function switchToEventItem() {
+    container.replaceChild(eventItem, eventForm);
+  }
+
+  eventItem
+    .querySelector(`.event__rollup-btn`)
+    .addEventListener(`click`, (evt) => {
+      evt.preventDefault();
+      switchToEventForm();
+    });
+
+  eventForm
+    .querySelector(`form`)
+    .addEventListener(`submit`, (evt) => {
+      evt.preventDefault();
+      switchToEventItem();
+    });
+
 }
 
