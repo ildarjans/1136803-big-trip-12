@@ -1,12 +1,12 @@
-import {createDOMElement} from '../utils/render.js';
+import {createDOMElement} from '../../utils/render.js';
 
-export default class DaysListView {
+export default class EventListView {
   constructor() {
     this._element = null;
   }
   _getTemplate() {
     return (
-      `<ul class="trip-days">
+      `<ul class="trip-events__list">
       </ul>`
     );
   }

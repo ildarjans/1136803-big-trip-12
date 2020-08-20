@@ -1,19 +1,14 @@
-import {createDOMElement} from '../utils/render.js';
-function createEventListTemplate() {
-  return (
-    `<ul class="trip-events__list">
+import {createDOMElement} from '../../utils/render.js';
 
-    </ul>
-   `
-  );
-}
-
-export default class EventList {
+export default class MenuControlsView {
   constructor() {
     this._element = null;
   }
   _getTemplate() {
-    return createEventListTemplate(this._trip);
+    return (
+      `<div class="trip-main__trip-controls  trip-controls">
+      </div>`
+    );
   }
 
   getElement() {

@@ -1,27 +1,23 @@
 import {createDOMElement} from '../utils/render.js';
 import {getCustomDateString, getShortMonthDayString} from '../utils/date.js';
 
-function createDayItemTemplate(date, order) {
-  const dateString = getCustomDateString(date);
-  const monthAndDayString = getShortMonthDayString(date);
-  return (
-    `<li class="trip-days__item  day">
-      <div class="day__info">
-        <span class="day__counter">${order}</span>
-        <time class="day__date" datetime="${dateString}">${monthAndDayString}</time>
-      </div>
-    </li>`
-  );
-}
-
-export default class DayItem {
-  constructor(trip, order) {
+export default class DayItemView {
+  constructor(date, order) {
     this._element = null;
-    this._trip = trip;
+    this._date = date;
     this._order = order;
   }
   _getTemplate() {
-    return createDayItemTemplate(this._trip, this._order);
+    const dateString = getCustomDateString(this._date);
+    const monthAndDayString = getShortMonthDayString(this._date);
+    return (
+      `<li class="trip-days__item  day">
+        <div class="day__info">
+          <span class="day__counter">${this._order}</span>
+          <time class="day__date" datetime="${dateString}">${monthAndDayString}</time>
+        </div>
+      </li>`
+    );
   }
 
   getElement() {

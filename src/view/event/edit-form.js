@@ -1,11 +1,11 @@
-import {createDOMElement} from '../utils/render.js';
-import {getFormDateString} from '../utils/date.js';
+import {createDOMElement} from '../../utils/render.js';
+import {getFormDateString} from '../../utils/date.js';
 
 import {
   TRASNFER_TYPES,
   ACTIVITY_TYPES,
   CITIES
-} from '../consts.js';
+} from '../../consts.js';
 
 function createEventEditFormTemplate(trip, includeDestination = true) {
   const {
