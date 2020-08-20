@@ -1,15 +1,14 @@
 import {MOCK_TRIP_LENGTH, EVENT_MESSAGES} from './consts.js';
-import DaysList from './view/days-container.js';
+import DaysListView from './view/day/list.js';
+import DayItemView from './view/day/item.js';
 import MenuControlsView from './view/menu/controls.js';
 import MenuFiltersView from './view/menu/filters.js';
 import MenuTabsView from './view/menu/tabs.js';
 import MenuInfoView from './view/menu/info.js';
-import DayItemView from './view/day-item.js';
 import EventSortView from './view/event/sort.js';
 import EventListView from './view/event/list.js';
-import EventItemView from './view/event/item.js';
-import EventFormView from './view/event/edit-form.js';
 import EventMessageView from './view/event/message.js';
+import {renderEventComponent} from './view/event/render.js';
 import {renderElement} from './utils/render.js';
 import {sortTripsByDate, isSameDate} from './utils/date.js';
 import {genereteMockTrips} from './mock/trip.js';
@@ -42,7 +41,7 @@ function renderTrips(tripsArr) {
   const sortedTrips = sortTripsByDate(tripsArr.slice());
 
   // tripEvent --> daysContainer --> dayContainer --> eventContainer
-  const daysContainer = new DaysList().getElement();
+  const daysContainer = new DaysListView().getElement();
   let eventsList;
   let lastDay;
   let dayItem;
@@ -68,42 +67,3 @@ function renderTrips(tripsArr) {
   renderElement(tripEvents, daysContainer);
 
 }
-
-function renderEventComponent(container, trip) {
-  const eventItem = new EventItemView(trip).getElement();
-  const eventForm = new EventFormView(trip).getElement();
-
-  renderElement(container, eventItem);
-
-  function switchToEventForm() {
-    container.replaceChild(eventForm, eventItem);
-    window.addEventListener(`keydown`, windowEscHandler);
-  }
-
-  function switchToEventItem() {
-    container.replaceChild(eventItem, eventForm);
-    window.removeEventListener(`keydown`, windowEscHandler);
-  }
-
-  function windowEscHandler(evt) {
-    if (evt.key === `Escape`) {
-      switchToEventItem();
-    }
-  }
-
-  eventItem
-    .querySelector(`.event__rollup-btn`)
-    .addEventListener(`click`, (evt) => {
-      evt.preventDefault();
-      switchToEventForm();
-    });
-
-  eventForm
-    .querySelector(`form`)
-    .addEventListener(`submit`, (evt) => {
-      evt.preventDefault();
-      switchToEventItem();
-    });
-
-}
-

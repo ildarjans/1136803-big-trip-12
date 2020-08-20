@@ -1,5 +1,5 @@
-import {createDOMElement} from '../utils/render.js';
-import {getCustomDateString, getShortMonthDayString} from '../utils/date.js';
+import {createDOMElement} from '../../utils/render.js';
+import {getCustomDateString, getShortMonthDayString} from '../../utils/date.js';
 
 export default class DayItemView {
   constructor(date, order) {
