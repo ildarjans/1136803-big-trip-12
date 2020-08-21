@@ -94,6 +94,10 @@ const PHOTOS = [
   `http://picsum.photos/248/152?r=${Math.random()}`
 ];
 
+const EVENT_MESSAGES = {
+  EMPTY: `Click New Event to create your first point`
+};
+
 export {
   MOCK_TRIP_LENGTH,
   TRASNFER_TYPES,
@@ -107,4 +111,5 @@ export {
   DECSRIPTION_STRING_MIN,
   DAY_LIMIT_EVENTS,
   OFFER_LIMIT,
+  EVENT_MESSAGES,
 };

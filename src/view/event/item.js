@@ -1,11 +1,33 @@
+import {createDOMElement} from '../../utils/render.js';
 import {
   getCustomDateLocaleString,
   getTimeDiffString,
   getCustomTimeString
-} from '../utils/date.js';
-import {TYPE_PREFIXES} from '../consts.js';
+} from '../../utils/date.js';
+import {TYPE_PREFIXES} from '../../consts.js';
 
-export function createEventItemTemplate(trip) {
+export default class EventItemView {
+  constructor(trip) {
+    this._element = null;
+    this._trip = trip;
+  }
+  _getTemplate() {
+    return createEventItemTemplate(this._trip);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createDOMElement(this._getTemplate());
+    }
+    return this._element;
+  }
+
+  resetElement() {
+    this._element = null;
+  }
+}
+
+function createEventItemTemplate(trip) {
   const {
     type,
     city,
@@ -59,8 +81,9 @@ function createEventOffersTemplate(offers) {
     return `\
     <li class="event__offer">
       <span class="event__offer-title">${offer.title}</span>
-      &plus;
-      &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${offer.price}</span>
     </>`;
   }).join(``);
 }
+
