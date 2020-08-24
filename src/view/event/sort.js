@@ -1,9 +1,6 @@
-import {createDOMElement} from '../../utils/render.js';
+import Abstract from '../abstract.js';
 
-export default class EventSortView {
-  constructor() {
-    this._element = null;
-  }
+export default class EventSortView extends Abstract {
   _getTemplate() {
     return (
       `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
@@ -37,16 +34,5 @@ export default class EventSortView {
       <span class="trip-sort__item  trip-sort__item--offers">Offers</span>
     </form>`
     );
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createDOMElement(this._getTemplate());
-    }
-    return this._element;
-  }
-
-  resetElement() {
-    this._element = null;
   }
 }
