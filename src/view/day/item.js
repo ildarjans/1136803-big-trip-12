@@ -1,9 +1,9 @@
-import {createDOMElement} from '../../utils/render.js';
+import Abstract from '../abstract.js';
 import {getCustomDateString, getShortMonthDayString} from '../../utils/date.js';
 
-export default class DayItemView {
+export default class DayItemView extends Abstract {
   constructor(date, order) {
-    this._element = null;
+    super();
     this._date = date;
     this._order = order;
   }
@@ -18,17 +18,6 @@ export default class DayItemView {
         </div>
       </li>`
     );
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createDOMElement(this._getTemplate());
-    }
-    return this._element;
-  }
-
-  resetElement() {
-    this._element = null;
   }
 }
 

@@ -1,9 +1,6 @@
-import {createDOMElement} from '../../utils/render.js';
+import Abstract from '../abstract.js';
 
-export default class MenuInfoView {
-  constructor() {
-    this._element = null;
-  }
+export default class MenuInfoView extends Abstract {
   _getTemplate() {
     return (
       `<section class="trip-main__trip-info  trip-info">
@@ -18,16 +15,5 @@ export default class MenuInfoView {
       </p>
     </section>`
     );
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createDOMElement(this._getTemplate());
-    }
-    return this._element;
-  }
-
-  resetElement() {
-    this._element = null;
   }
 }

@@ -1,4 +1,4 @@
-import {createDOMElement} from '../../utils/render.js';
+import AbstractView from '../abstract.js';
 import {getFormDateString} from '../../utils/date.js';
 
 import {
@@ -6,6 +6,31 @@ import {
   ACTIVITY_TYPES,
   CITIES
 } from '../../consts.js';
+
+export default class EventForm extends AbstractView {
+  constructor(trip, destination = true) {
+    super();
+    this._trip = trip;
+    this._destination = destination;
+    this._submitHandler = this._submitHandler.bind(this);
+  }
+  _getTemplate() {
+    return createEventEditFormTemplate(this._trip, this._destination);
+  }
+
+  _submitHandler(evt) {
+    evt.preventDefault();
+    this._callbacks.submit();
+  }
+
+  setSubmitHandler(cb) {
+    this._callbacks.submit = cb;
+    this.getElement()
+      .querySelector(`form`)
+      .addEventListener(`submit`, this._callbacks.submit);
+  }
+
+}
 
 function createEventEditFormTemplate(trip, includeDestination = true) {
   const {
@@ -209,26 +234,4 @@ function createPhotosTemplate(photos) {
       src="${photo}"
       alt="Event photo"></img>`;
   }).join(``);
-}
-
-export default class EventForm {
-  constructor(trip, destination = true) {
-    this._element = null;
-    this._trip = trip;
-    this._destination = destination;
-  }
-  _getTemplate() {
-    return createEventEditFormTemplate(this._trip, this._destination);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createDOMElement(this._getTemplate());
-    }
-    return this._element;
-  }
-
-  resetElement() {
-    this._element = null;
-  }
 }

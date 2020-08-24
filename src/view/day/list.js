@@ -1,24 +1,10 @@
-import {createDOMElement} from '../../utils/render.js';
+import Abstract from '../abstract.js';
 
-export default class DaysListView {
-  constructor() {
-    this._element = null;
-  }
+export default class DaysListView extends Abstract {
   _getTemplate() {
     return (
       `<ul class="trip-days">
       </ul>`
     );
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createDOMElement(this._getTemplate());
-    }
-    return this._element;
-  }
-
-  resetElement() {
-    this._element = null;
   }
 }
