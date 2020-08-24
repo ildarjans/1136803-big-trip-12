@@ -7,7 +7,7 @@ import {
   CITIES
 } from '../../consts.js';
 
-export default class EventForm extends AbstractView {
+export default class EventFormView extends AbstractView {
   constructor(trip, destination = true) {
     super();
     this._trip = trip;

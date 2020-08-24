@@ -19,7 +19,6 @@ export default class TripPresenter {
     // DOMElements
     this._headerContainer = headerContainer;
     this._eventsContainer = eventsContainer;
-    this._trips = null;
 
     // menu
     this._menuControls = new MenuControlsView();
@@ -34,8 +33,10 @@ export default class TripPresenter {
     this._dayItem = null;
     this._eventList = null;
 
+    // closure
     this._dayCounter = 0;
     this._tripDay = null;
+    this._trips = null;
     this._lastDay = null;
   }
 
