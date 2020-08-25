@@ -1,6 +1,6 @@
-import Abstract from '../abstract.js';
+import AbstractView from '../abstract.js';
 
-export default class MenuInfoView extends Abstract {
+export default class MenuInfoView extends AbstractView {
   _getTemplate() {
     return (
       `<section class="trip-main__trip-info  trip-info">

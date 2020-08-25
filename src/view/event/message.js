@@ -1,6 +1,6 @@
-import Abstract from '../abstract.js';
+import AbstractView from '../abstract.js';
 
-export default class EventMessageView extends Abstract {
+export default class EventMessageView extends AbstractView {
   constructor(message) {
     super();
     this._message = message;

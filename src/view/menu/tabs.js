@@ -1,6 +1,6 @@
-import Abstract from '../abstract.js';
+import AbstractView from '../abstract.js';
 
-export default class MenuTabsView extends Abstract {
+export default class MenuTabsView extends AbstractView {
   _getTemplate() {
     return (
       `<h2 class="visually-hidden">Switch trip view</h2>

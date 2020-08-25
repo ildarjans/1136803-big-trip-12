@@ -1,6 +1,6 @@
-import Abstract from '../abstract.js';
+import AbstractView from '../abstract.js';
 
-export default class EventSortView extends Abstract {
+export default class EventSortView extends AbstractView {
   _getTemplate() {
     return (
       `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">

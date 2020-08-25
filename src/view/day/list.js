@@ -1,6 +1,6 @@
-import Abstract from '../abstract.js';
+import AbstractView from '../abstract.js';
 
-export default class DaysListView extends Abstract {
+export default class DaysListView extends AbstractView {
   _getTemplate() {
     return (
       `<ul class="trip-days">

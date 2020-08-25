@@ -1,7 +1,7 @@
-import Abstract from '../abstract.js';
+import AbstractView from '../abstract.js';
 import {getCustomDateString, getShortMonthDayString} from '../../utils/date.js';
 
-export default class DayItemView extends Abstract {
+export default class DayItemView extends AbstractView {
   constructor(date, order) {
     super();
     this._date = date;
