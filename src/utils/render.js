@@ -25,14 +25,14 @@ export function getAbstractClassDOMElement(element) {
 }
 
 export function replaceDOMElement(newChild, oldСhild) {
-  const parent = newChild.parentElement;
+  newChild = getAbstractClassDOMElement(newChild);
+  oldСhild = getAbstractClassDOMElement(oldСhild);
+  const parent = oldСhild.parentElement;
 
-  if (!parent || !newChild || !newChild) {
+  if (!parent || !newChild || !oldСhild) {
     throw new Error(`one of elements doesn't set`);
   }
 
-  newChild = getAbstractClassDOMElement(newChild);
-  oldСhild = getAbstractClassDOMElement(oldСhild);
   parent.replaceChild(newChild, oldСhild);
 }
 
