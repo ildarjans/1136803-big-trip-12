@@ -23,3 +23,24 @@ export function getAbstractClassDOMElement(element) {
     element.getElement() :
     element;
 }
+
+export function replaceDOMElement(newChild, oldСhild) {
+  const parent = newChild.parentElement;
+
+  if (!parent || !newChild || !newChild) {
+    throw new Error(`one of elements doesn't set`);
+  }
+
+  newChild = getAbstractClassDOMElement(newChild);
+  oldСhild = getAbstractClassDOMElement(oldСhild);
+  parent.replaceChild(newChild, oldСhild);
+}
+
+export function removeElement(element) {
+  if (!(element instanceof AbstractView)) {
+    throw new Error(`u can remove only instance of Abstract class`);
+  }
+
+  element.getElement().remove();
+  element.resetElement();
+}

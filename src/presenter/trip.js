@@ -1,39 +1,31 @@
 import {EVENT_MESSAGES} from '../consts.js';
 import DaysListView from '../view/day/list.js';
 import DayItemView from '../view/day/item.js';
-import MenuControlsView from '../view/menu/controls.js';
-import MenuFiltersView from '../view/menu/filters.js';
-import MenuTabsView from '../view/menu/tabs.js';
-import MenuInfoView from '../view/menu/info.js';
 import EventSortView from '../view/event/sort.js';
 import EventListView from '../view/event/list.js';
 import EventMessageView from '../view/event/message.js';
 import EventItemView from '../view/event/item.js';
 import EventFormView from '../view/event/edit-form.js';
 import {sortTripsByDate, isSameDate} from '../utils/date.js';
-import {renderFirstPlaceElement, renderLastPlaceElement} from '../utils/render.js';
+import {
+  renderLastPlaceElement,
+  replaceDOMElement
+} from '../utils/render.js';
 
 
 export default class TripPresenter {
-  constructor(headerContainer, eventsContainer) {
+  constructor(eventsContainer) {
     // DOMElements
-    this._headerContainer = headerContainer;
     this._eventsContainer = eventsContainer;
 
-    // menu
-    this._menuControls = new MenuControlsView();
-    this._menuTabs = new MenuTabsView();
-    this._menuFilters = new MenuFiltersView();
-    this._menuInfo = new MenuInfoView();
-
-    // trip container child
+    // trip components
     this._eventSort = new EventSortView();
     this._eventEmptyMessage = new EventMessageView(EVENT_MESSAGES.EMPTY);
     this._daysList = new DaysListView();
     this._dayItem = null;
     this._eventList = null;
 
-    // closure
+    // closure variables
     this._dayCounter = 0;
     this._tripDay = null;
     this._trips = null;
@@ -42,7 +34,6 @@ export default class TripPresenter {
 
   init(trips) {
     this._trips = sortTripsByDate(trips);
-    this._renderMenu();
 
     if (!this._trips) {
       this._renderEmptyMessage();
@@ -66,16 +57,7 @@ export default class TripPresenter {
       this._renderEventComponent(this._eventList, trip);
 
     });
-
     renderLastPlaceElement(this._eventsContainer, this._daysList);
-
-  }
-
-  _renderMenu() {
-    renderLastPlaceElement(this._menuControls, this._menuTabs);
-    renderLastPlaceElement(this._menuControls, this._menuFilters);
-    renderFirstPlaceElement(this._headerContainer, this._menuControls);
-    renderFirstPlaceElement(this._headerContainer, this._menuInfo);
   }
 
   _renderSort() {
@@ -111,22 +93,12 @@ export default class TripPresenter {
     }
 
     function switchToEventForm() {
-      container
-        .getElement()
-        .replaceChild(
-            eventForm.getElement(),
-            eventItem.getElement()
-        );
+      replaceDOMElement(eventForm, eventItem);
       window.addEventListener(`keydown`, windowEscHandler);
     }
 
     function switchToEventItem() {
-      container
-        .getElement()
-        .replaceChild(
-            eventItem.getElement(),
-            eventForm.getElement()
-        );
+      replaceDOMElement(eventItem, eventForm);
       window.removeEventListener(`keydown`, windowEscHandler);
     }
 
