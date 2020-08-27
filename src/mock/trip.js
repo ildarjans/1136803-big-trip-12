@@ -8,13 +8,22 @@ import {
   DECSRIPTION_STRING_LIMIT,
   DECSRIPTION_STRING_MIN,
   OFFER_LIMIT,
+  MOCK_TRIP_LENGTH
 } from '../consts.js';
 
 import {getRandomInteger, getRandomArrayElements} from '../utils/common.js';
 
 const allEventTypes = [...TRASNFER_TYPES, ...ACTIVITY_TYPES];
 
-export function genereteMockTrips() {
+export function getTripsArray() {
+  return (
+    Array(MOCK_TRIP_LENGTH)
+      .fill()
+      .map(genereteMockTrip)
+  );
+}
+
+function genereteMockTrip() {
   const description = getRandomArrayElements(
       DESCRIPTIONS,
       getRandomInteger(DECSRIPTION_STRING_LIMIT, DECSRIPTION_STRING_MIN)

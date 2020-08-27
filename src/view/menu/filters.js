@@ -1,9 +1,6 @@
-import {createDOMElement} from '../../utils/render.js';
+import AbstractView from '../abstract.js';
 
-export default class MenuFiltersView {
-  constructor() {
-    this._element = null;
-  }
+export default class MenuFiltersView extends AbstractView {
   _getTemplate() {
     return (
       `<h2 class="visually-hidden">Filter events</h2>
@@ -26,16 +23,5 @@ export default class MenuFiltersView {
       <button class="visually-hidden" type="submit">Accept filter</button>
     </form>`
     );
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createDOMElement(this._getTemplate());
-    }
-    return this._element;
-  }
-
-  resetElement() {
-    this._element = null;
   }
 }

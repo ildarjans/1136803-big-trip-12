@@ -1,4 +1,4 @@
-import {createDOMElement} from '../../utils/render.js';
+import AbstractView from '../abstract.js';
 import {
   getCustomDateLocaleString,
   getTimeDiffString,
@@ -6,25 +6,28 @@ import {
 } from '../../utils/date.js';
 import {TYPE_PREFIXES} from '../../consts.js';
 
-export default class EventItemView {
+export default class EventItemView extends AbstractView {
   constructor(trip) {
-    this._element = null;
+    super();
     this._trip = trip;
+    this._clickHandler = this._clickHandler.bind(this);
   }
   _getTemplate() {
     return createEventItemTemplate(this._trip);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createDOMElement(this._getTemplate());
-    }
-    return this._element;
+  _clickHandler(evt) {
+    evt.preventDefault();
+    this._callbacks.click();
   }
 
-  resetElement() {
-    this._element = null;
+  setClickHandler(cb) {
+    this._callbacks.click = cb;
+    this.getElement()
+      .querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, this._clickHandler);
   }
+
 }
 
 function createEventItemTemplate(trip) {
