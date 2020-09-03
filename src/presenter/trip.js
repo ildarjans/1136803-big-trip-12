@@ -4,12 +4,10 @@ import DayItemView from '../view/day/item.js';
 import EventSortView from '../view/event/sort.js';
 import EventListView from '../view/event/list.js';
 import EventMessageView from '../view/event/message.js';
-import EventItemView from '../view/event/item.js';
-import EventFormView from '../view/event/edit-form.js';
+import EventPresenter from './event.js';
 import {sortTripsByDate, isSameDate} from '../utils/date.js';
 import {
   renderLastPlaceElement,
-  replaceDOMElement
 } from '../utils/render.js';
 
 
@@ -24,6 +22,8 @@ export default class TripPresenter {
     this._daysList = new DaysListView();
     this._dayItem = null;
     this._eventList = null;
+
+    this._eventPresenter = [];
 
     // closure variables
     this._dayCounter = 0;
@@ -49,15 +49,20 @@ export default class TripPresenter {
         this._dayCounter++;
         this._dayItem = new DayItemView(this._tripDay, this._dayCounter);
         this._eventList = new EventListView();
+
         this._renderDayItem();
         this._renderEventList();
         this._lastDay = this._tripDay;
       }
 
-      this._renderEventComponent(this._eventList, trip);
+      const presenter = new EventPresenter(this._eventList);
+      this._eventPresenter.push(presenter);
+      presenter.init(trip);
 
     });
+
     renderLastPlaceElement(this._eventsContainer, this._daysList);
+
   }
 
   _renderSort() {
@@ -78,32 +83,6 @@ export default class TripPresenter {
 
   _renderEventList() {
     renderLastPlaceElement(this._dayItem, this._eventList);
-  }
-
-  _renderEventComponent(container, trip) {
-    const eventItem = new EventItemView(trip);
-    const eventForm = new EventFormView(trip);
-
-    renderLastPlaceElement(container, eventItem);
-
-    function windowEscHandler(evt) {
-      if (evt.key === `Escape`) {
-        switchToEventItem();
-      }
-    }
-
-    function switchToEventForm() {
-      replaceDOMElement(eventForm, eventItem);
-      window.addEventListener(`keydown`, windowEscHandler);
-    }
-
-    function switchToEventItem() {
-      replaceDOMElement(eventItem, eventForm);
-      window.removeEventListener(`keydown`, windowEscHandler);
-    }
-
-    eventItem.setClickHandler(switchToEventForm);
-    eventForm.setSubmitHandler(switchToEventItem);
   }
 
 }

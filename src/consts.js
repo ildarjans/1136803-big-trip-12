@@ -1,10 +1,10 @@
-const MOCK_TRIP_LENGTH = 21;
-const DECSRIPTION_STRING_LIMIT = 5;
-const DECSRIPTION_STRING_MIN = 1;
-const OFFER_LIMIT = 3;
-const DAY_LIMIT_EVENTS = 3;
+export const MOCK_TRIP_LENGTH = 21;
+export const DECSRIPTION_STRING_LIMIT = 5;
+export const DECSRIPTION_STRING_MIN = 1;
+export const OFFER_LIMIT = 3;
+export const DAY_LIMIT_EVENTS = 3;
 
-const TYPE_PREFIXES = {
+export const TYPE_PREFIXES = {
   'Taxi': `to`,
   'Bus': `to`,
   'Train': `to`,
@@ -17,7 +17,7 @@ const TYPE_PREFIXES = {
   'Restaurant': `in`,
 };
 
-const TRASNFER_TYPES = [
+export const TRASNFER_TYPES = [
   `Taxi`,
   `Bus`,
   `Train`,
@@ -27,13 +27,13 @@ const TRASNFER_TYPES = [
   `Flight`,
 ];
 
-const ACTIVITY_TYPES = [
+export const ACTIVITY_TYPES = [
   `Check-in`,
   `Sightseeing`,
   `Restaurant`
 ];
 
-const CITIES = [
+export const CITIES = [
   `Amsterdam`,
   `Geneva`,
   `Chamonix`,
@@ -48,7 +48,7 @@ const CITIES = [
   `Napoli`,
 ];
 
-const OFFERS = [
+export const OFFERS = [
   {
     type: `luggage`,
     title: `Add luggage`,
@@ -76,7 +76,7 @@ const OFFERS = [
   },
 ];
 
-const DESCRIPTIONS = `\n
+export const DESCRIPTIONS = `\n
 Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n
 Cras aliquet varius magna, non porta ligula feugiat eget.\n
 Fusce tristique felis at fermentum pharetra.\n
@@ -88,28 +88,12 @@ Aliquam erat volutpat.\n
 Nunc fermentum tortor ac porta dapibus.\n
 In rutrum ac purus sit amet tempus`.split(`\n`);
 
-const PHOTOS = [
+export const PHOTOS = [
   `http://picsum.photos/248/152?r=${Math.random()}`,
   `http://picsum.photos/248/152?r=${Math.random()}`,
   `http://picsum.photos/248/152?r=${Math.random()}`
 ];
 
-const EVENT_MESSAGES = {
+export const EVENT_MESSAGES = {
   EMPTY: `Click New Event to create your first point`
-};
-
-export {
-  MOCK_TRIP_LENGTH,
-  TRASNFER_TYPES,
-  ACTIVITY_TYPES,
-  TYPE_PREFIXES,
-  CITIES,
-  OFFERS,
-  DESCRIPTIONS,
-  PHOTOS,
-  DECSRIPTION_STRING_LIMIT,
-  DECSRIPTION_STRING_MIN,
-  DAY_LIMIT_EVENTS,
-  OFFER_LIMIT,
-  EVENT_MESSAGES,
 };
