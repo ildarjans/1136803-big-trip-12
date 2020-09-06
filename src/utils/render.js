@@ -44,3 +44,13 @@ export function removeElement(element) {
   element.getElement().remove();
   element.resetElement();
 }
+
+export function updateItem(trips, update) {
+  const index = trips
+    .findIndex((trip) => trip.point.id === update.point.id);
+
+  if (index !== -1) {
+    trips.splice(index, 1, update);
+  }
+  return trips;
+}

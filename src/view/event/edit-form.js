@@ -1,49 +1,94 @@
-import AbstractView from '../abstract.js';
 import {getFormDateString} from '../../utils/date.js';
+import SmartView from '../smart.js';
 
 import {
-  TRASNFER_TYPES,
+  POINT_TYPE_PREFIXES,
   ACTIVITY_TYPES,
   CITIES
 } from '../../consts.js';
 
-export default class EventFormView extends AbstractView {
-  constructor(trip, destination = true) {
+export default class EventFormView extends SmartView {
+  constructor(data, destination = true) {
     super();
-    this._trip = trip;
+    this._data = data;
     this._destination = destination;
-    this._submitHandler = this._submitHandler.bind(this);
+
+    this._bindInnerHandlers();
+    this._setInnerHandlers();
   }
   _getTemplate() {
-    return createEventEditFormTemplate(this._trip, this._destination);
+    return createEventEditFormTemplate(this._data, this._destination);
   }
 
-  _submitHandler(evt) {
+  _bindInnerHandlers() {
+    this._submitClickHandler = this._submitClickHandler.bind(this);
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+  }
+
+  _setInnerHandlers() {
+    const self = this.getElement();
+
+    self
+      .querySelector(`.event__type-list`)
+      .addEventListener(`change`, this._eventTypeClickHandler);
+  }
+
+  _favoriteClickHandler() {
+    this._data.point[`is_favorite`] = !this._data.point[`is_favorite`];
+    this.updateData(this._data);
+  }
+
+  _submitClickHandler(evt) {
     evt.preventDefault();
     this._callbacks.submit();
   }
 
-  setSubmitHandler(cb) {
+  _eventTypeClickHandler(evt) {
+    evt.preventDefault();
+    window.console.log(evt.target);
+    if (evt.target.classList.contains(`event__type-input`)) {
+      // this.updateData();
+    }
+  }
+
+  // _eventTypeClickHandler(evt) {
+  //   evt.preventDefault();
+  //   this._callbacks.eventType();
+  // }
+
+  setSubmitClickHandler(cb) {
     this._callbacks.submit = cb;
     this.getElement()
       .querySelector(`form`)
-      .addEventListener(`submit`, this._callbacks.submit);
+      .addEventListener(`submit`, this._submitClickHandler);
   }
+
+  setFavoriteClickHandler(cb) {
+    this._callbacks.favorite = cb;
+    this.getElement()
+      .querySelector(`.event__favorite-checkbox`)
+      .addEventListener(`click`, this._favoriteClickHandler);
+  }
+
+  // setEventTypeClickHandler(cb) {
+  //   this._callbacks.eventType = cb;
+  //   this.getElement()
+  //     .querySelector(`.event__type-item`)
+  //     .addEventListener(`click`, this._eventTypeClickHandler);
+  // }
 
 }
 
 function createEventEditFormTemplate(trip, includeDestination = true) {
   const {
-    type,
-    city,
-    schedule,
-    price,
-    offers,
+    offer,
+    description,
+    point,
   } = trip;
 
-  const destination = includeDestination ? createEditFormDestinations(trip) : ``;
-  const pickDateFrom = getFormDateString(schedule.start);
-  const pickDateTo = getFormDateString(schedule.finish);
+  const destination = includeDestination ? createEditFormDestinations(description) : ``;
+  const pickDateFrom = getFormDateString(point.date_from);
+  const pickDateTo = getFormDateString(point.date_to);
   return (
     `<li class="trip-events__item">
       <form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -51,7 +96,7 @@ function createEventEditFormTemplate(trip, includeDestination = true) {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${offer.type}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -59,14 +104,14 @@ function createEventEditFormTemplate(trip, includeDestination = true) {
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Transfer</legend>
 
-              ${createTransferListTemplate(type)}
+              ${createTransferListTemplate(offer.type)}
 
             </fieldset>
 
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Activity</legend>
 
-              ${createActivityListTemplate(type)}
+              ${createActivityListTemplate(offer.type)}
 
             </fieldset>
           </div>
@@ -74,11 +119,11 @@ function createEventEditFormTemplate(trip, includeDestination = true) {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${type} to
+            ${offer.type} to
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${description.name}" list="destination-list-1">
           <datalist id="destination-list-1">
-            ${createDestinationListTemplate()}
+            ${createCitiesListTemplate()}
           </datalist>
         </div>
 
@@ -118,19 +163,33 @@ function createEventEditFormTemplate(trip, includeDestination = true) {
                 id="event-price-1"
                 type="text"
                 name="event-price"
-                value="${price}"
+                value="${point.base_price}"
           >
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Cancel</button>
+        <button class="event__reset-btn" type="reset">Delete</button>
+
+        <input
+              id="event-favorite-1"
+              class="event__favorite-checkbox  visually-hidden"
+              type="checkbox"
+              name="event-favorite"
+              ${point[`is_favorite`] ? `checked` : ``}>
+        <label class="event__favorite-btn" for="event-favorite-1">
+          <span class="visually-hidden">Add to favorite</span>
+          <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
+            <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
+          </svg>
+        </label>
+
       </header>
       <section class="event__details">
         <section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${createFormOffersTemplate(offers)}
+            ${createFormOffersTemplate(offer)}
           </div>
         </section>
       </section>
@@ -140,21 +199,17 @@ function createEventEditFormTemplate(trip, includeDestination = true) {
 `);
 }
 
-function createEditFormDestinations(trip) {
-  const {
-    description,
-    photos,
-  } = trip;
+function createEditFormDestinations(description) {
   return (
     `<section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
         <p class="event__destination-description">
-          ${description}
+          ${description.description}
         </p>
 
         <div class="event__photos-container">
           <div class="event__photos-tape">
-            ${createPhotosTemplate(photos)}
+            ${createPicturesTemplate(description.pictures)}
           </div>
         </div>
       </section>
@@ -162,30 +217,32 @@ function createEditFormDestinations(trip) {
   );
 }
 
-function createFormOffersTemplate(offers) {
-  return offers.map((offer) => {
+function createFormOffersTemplate(offer) {
+  const type = offer.type;
+  const offers = offer.offers;
+  return offers.map((off) => {
     return `\
       <div class="event__offer-selector">
         <input class="event__offer-checkbox  visually-hidden"
-              id="event-offer-${offer.type}-1"
+              id="event-offer-${type}-1"
               type="checkbox"
-              name="event-offer-${offer.type}"
+              name="event-offer-${type}"
         >
         <label class="event__offer-label"
-              for="event-offer-${offer.type}-1">
+              for="event-offer-${type}-1">
           <span class="event__offer-title">
-            ${offer.title}
+            ${off.title}
           </span>
           &plus;&euro;&nbsp;
           <span class="event__offer-price">
-          ${offer.price}
+          ${off.price}
           </span>
         </label>
       </div>`;
   }).join(``);
 }
 
-function createDestinationListTemplate() {
+function createCitiesListTemplate() {
   return CITIES.map((city) => {
     return `\
       <option value="${city}"></option>`;
@@ -193,20 +250,21 @@ function createDestinationListTemplate() {
 }
 
 function createTransferListTemplate(selectedType) {
-  return TRASNFER_TYPES.map((type) => {
-    return `\
-    <div class="event__type-item">
-      <input
-            id="event-type-${type}-1"
-            class="event__type-input visually-hidden"
-            type="radio"
-            name="event-type"
-            value="${type}"
-            ${selectedType === type ? `checked` : ``}
-      >
-      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
-    </div>`;
-  }).join(``);
+  return Object.keys(POINT_TYPE_PREFIXES)
+    .map((type) => {
+      return `\
+      <div class="event__type-item">
+        <input
+              id="event-type-${type}-1"
+              class="event__type-input visually-hidden"
+              type="radio"
+              name="event-type"
+              value="${type}"
+              ${selectedType === type ? `checked` : ``}
+        >
+        <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
+      </div>`;
+    }).join(``);
 }
 
 function createActivityListTemplate(selectedType) {
@@ -226,12 +284,12 @@ function createActivityListTemplate(selectedType) {
   }).join(``);
 }
 
-function createPhotosTemplate(photos) {
-  return photos.map((photo) => {
+function createPicturesTemplate(pictures) {
+  return pictures.map((pic) => {
     return `\
     <img
       class="event__photo"
-      src="${photo}"
+      src="${pic.src}"
       alt="Event photo"></img>`;
   }).join(``);
 }

@@ -3,8 +3,12 @@ export const DECSRIPTION_STRING_LIMIT = 5;
 export const DECSRIPTION_STRING_MIN = 1;
 export const OFFER_LIMIT = 3;
 export const DAY_LIMIT_EVENTS = 3;
+export const PRICE_RANGE = {
+  MIN: 10,
+  MAX: 99
+};
 
-export const TYPE_PREFIXES = {
+export const POINT_TYPE_PREFIXES = {
   'Taxi': `to`,
   'Bus': `to`,
   'Train': `to`,
@@ -12,12 +16,12 @@ export const TYPE_PREFIXES = {
   'Transport': `to`,
   'Drive': `to`,
   'Flight': `to`,
-  'Check-in': `at`,
+  'Check-in': `in`,
   'Sightseeing': `in`,
   'Restaurant': `in`,
 };
 
-export const TRASNFER_TYPES = [
+export const OFFER_TYPES = [
   `Taxi`,
   `Bus`,
   `Train`,
@@ -48,32 +52,14 @@ export const CITIES = [
   `Napoli`,
 ];
 
-export const OFFERS = [
-  {
-    type: `luggage`,
-    title: `Add luggage`,
-    price: 50
-  },
-  {
-    type: `comfort`,
-    title: `Switch to comfort class`,
-    price: 80
-  },
-  {
-    type: `meal`,
-    title: `Add meal`,
-    price: 200
-  },
-  {
-    type: `seats`,
-    title: `Choose seats`,
-    price: 50
-  },
-  {
-    type: `train`,
-    title: `Travel by train`,
-    price: 40
-  },
+
+export const OFFER_TITLES = [
+  `Switch to comfort class`,
+  `Add meal`,
+  `Choose seats`,
+  `add return ticket options`,
+  `add transfer`,
+  `add guide`
 ];
 
 export const DESCRIPTIONS = `\n

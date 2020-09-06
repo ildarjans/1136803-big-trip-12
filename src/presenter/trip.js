@@ -8,6 +8,7 @@ import EventPresenter from './event.js';
 import {sortTripsByDate, isSameDate} from '../utils/date.js';
 import {
   renderLastPlaceElement,
+  updateItem
 } from '../utils/render.js';
 
 
@@ -23,16 +24,20 @@ export default class TripPresenter {
     this._dayItem = null;
     this._eventList = null;
 
-    this._eventPresenter = [];
+    this._eventPresenters = {};
+    // handlers
+    this._changeData = this._changeData.bind(this);
 
     // closure variables
     this._dayCounter = 0;
     this._tripDay = null;
     this._trips = null;
+    this._sourcestrips = null;
     this._lastDay = null;
   }
 
   init(trips) {
+    this._sourcestrips = trips;
     this._trips = sortTripsByDate(trips);
 
     if (!this._trips) {
@@ -43,7 +48,7 @@ export default class TripPresenter {
     this._renderSort();
 
     this._trips.forEach((trip) => {
-      this._tripDay = trip.schedule.start;
+      this._tripDay = trip.point.date_from;
 
       if (!isSameDate(this._lastDay, this._tripDay)) {
         this._dayCounter++;
@@ -55,14 +60,20 @@ export default class TripPresenter {
         this._lastDay = this._tripDay;
       }
 
-      const presenter = new EventPresenter(this._eventList);
-      this._eventPresenter.push(presenter);
-      presenter.init(trip);
+      const eventPresenter = new EventPresenter(this._eventList, this._changeData);
+      this._eventPresenters[trip.point.id] = eventPresenter;
+      eventPresenter.init(trip);
 
     });
 
     renderLastPlaceElement(this._eventsContainer, this._daysList);
 
+  }
+
+  _changeData(updatedTrip) {
+    this._trips = updateItem(this._trips, updatedTrip);
+    const id = updatedTrip.point.id;
+    this._eventPresenters[id].init(updatedTrip);
   }
 
   _renderSort() {
