@@ -2,10 +2,15 @@ export const MOCK_TRIP_LENGTH = 21;
 export const DECSRIPTION_STRING_LIMIT = 5;
 export const DECSRIPTION_STRING_MIN = 1;
 export const OFFER_LIMIT = 3;
+export const PHOTOS_LIMIT = 3;
 export const DAY_LIMIT_EVENTS = 3;
 export const PRICE_RANGE = {
   MIN: 10,
-  MAX: 99
+  MAX: 199
+};
+export const EventMode = {
+  DEFAULT: `DEFAULT`,
+  EDIT: `EDIT`
 };
 
 export const POINT_TYPE_PREFIXES = {
@@ -55,11 +60,19 @@ export const CITIES = [
 
 export const OFFER_TITLES = [
   `Switch to comfort class`,
+  `Upgrade to a business class`,
+  `Choose the radio station`,
+  `Add luggage`,
   `Add meal`,
   `Choose seats`,
   `add return ticket options`,
   `add transfer`,
-  `add guide`
+  `add guide`,
+  `Choose live music`,
+  `Order a breakfast`,
+  `Book a taxi at the arrival point`,
+  `Drive quickly, I'm in a hurry`,
+  `Choose the radio station`,
 ];
 
 export const DESCRIPTIONS = `\n
@@ -73,12 +86,6 @@ Sed sed nisi sed augue convallis suscipit in sed felis.\n
 Aliquam erat volutpat.\n
 Nunc fermentum tortor ac porta dapibus.\n
 In rutrum ac purus sit amet tempus`.split(`\n`);
-
-export const PHOTOS = [
-  `http://picsum.photos/248/152?r=${Math.random()}`,
-  `http://picsum.photos/248/152?r=${Math.random()}`,
-  `http://picsum.photos/248/152?r=${Math.random()}`
-];
 
 export const EVENT_MESSAGES = {
   EMPTY: `Click New Event to create your first point`

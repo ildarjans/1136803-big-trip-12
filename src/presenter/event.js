@@ -4,18 +4,18 @@ import {
   renderLastPlaceElement,
   replaceDOMElement,
   removeElement,
-  updateItem
 } from '../utils/render.js';
+import {EventMode} from '../consts.js';
 
 
 export default class EventPresenter {
-  constructor(eventsList, changeData) {
-    // DOMElements
+  constructor(eventsList, changeData, changeMode) {
     this._eventsList = eventsList;
     this._changeData = changeData;
+    this._changeMode = changeMode;
     this._trip = null;
+    this._mode = EventMode.DEFAULT;
 
-    // trip components
     this._eventItemComponent = null;
     this._eventFormComponent = null;
 
@@ -23,6 +23,7 @@ export default class EventPresenter {
 
   init(trip) {
     this._trip = trip;
+
     const prevItemComponent = this._eventItemComponent;
     const prevFormComponent = this._eventFormComponent;
 
@@ -37,12 +38,13 @@ export default class EventPresenter {
       return;
     }
 
-    if (this._eventsList.getElement().contains(prevItemComponent.getElement())) {
-      replaceDOMElement(this._eventItemComponent, prevItemComponent);
-    }
-
-    if (this._eventsList.getElement().contains(prevFormComponent.getElement())) {
-      replaceDOMElement(this._eventFormComponent, prevFormComponent);
+    switch (this._mode) {
+      case EventMode.DEFAULT:
+        replaceDOMElement(this._eventItemComponent, prevItemComponent);
+        break;
+      case EventMode.EDIT:
+        replaceDOMElement(this._eventFormComponent, prevFormComponent);
+        break;
     }
 
     removeElement(prevItemComponent);
@@ -54,14 +56,12 @@ export default class EventPresenter {
     this._switchToEventForm = this._switchToEventForm.bind(this);
     this._switchToEventItem = this._switchToEventItem.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
-    // this._eventTypeClickHandler = this._eventTypeClickHandler.bind(this);
   }
 
   _setInnetHandlers() {
     this._eventItemComponent.setDropdownClickHandler(this._switchToEventForm);
     this._eventFormComponent.setSubmitClickHandler(this._switchToEventItem);
     this._eventFormComponent.setFavoriteClickHandler(this._favoriteClickHandler);
-    // this._eventFormComponent.setEventTypeClickHandler(this._eventTypeClickHandler);
   }
 
   _windowEscHandler(evt) {
@@ -70,20 +70,33 @@ export default class EventPresenter {
     }
   }
 
-  _switchToEventForm() {
-    replaceDOMElement(this._eventFormComponent, this._eventItemComponent);
-    window.addEventListener(`keydown`, this._windowEscHandler);
-  }
-
-  _switchToEventItem() {
-    replaceDOMElement(this._eventItemComponent, this._eventFormComponent);
-    window.removeEventListener(`keydown`, this._windowEscHandler);
-  }
-
   _favoriteClickHandler() {
     this._trip.point[`is_favorite`] = !this._trip.point[`is_favorite`];
     this._changeData(this._trip);
   }
 
+  _switchToEventForm() {
+    replaceDOMElement(this._eventFormComponent, this._eventItemComponent);
+    window.addEventListener(`keydown`, this._windowEscHandler);
+    this._changeMode();
+    this._mode = EventMode.EDIT;
+  }
+
+  _switchToEventItem() {
+    replaceDOMElement(this._eventItemComponent, this._eventFormComponent);
+    window.removeEventListener(`keydown`, this._windowEscHandler);
+    this._mode = EventMode.DEFAULT;
+  }
+
+  resetViewMode() {
+    if (this._mode === EventMode.EDIT) {
+      this._switchToEventItem();
+    }
+  }
+
+  resetEvent() {
+    this._eventItemComponent.resetElement();
+    this._eventFormComponent.resetElement();
+  }
 
 }

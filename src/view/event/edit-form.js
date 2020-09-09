@@ -2,8 +2,9 @@ import {getFormDateString} from '../../utils/date.js';
 import SmartView from '../smart.js';
 
 import {
-  POINT_TYPE_PREFIXES,
+  OFFER_TYPES,
   ACTIVITY_TYPES,
+  POINT_TYPE_PREFIXES,
   CITIES
 } from '../../consts.js';
 
@@ -16,6 +17,7 @@ export default class EventFormView extends SmartView {
     this._bindInnerHandlers();
     this._setInnerHandlers();
   }
+
   _getTemplate() {
     return createEventEditFormTemplate(this._data, this._destination);
   }
@@ -23,19 +25,13 @@ export default class EventFormView extends SmartView {
   _bindInnerHandlers() {
     this._submitClickHandler = this._submitClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this._eventTypeClickHandler = this._eventTypeClickHandler.bind(this);
   }
 
   _setInnerHandlers() {
-    const self = this.getElement();
-
-    self
+    this.getElement()
       .querySelector(`.event__type-list`)
       .addEventListener(`change`, this._eventTypeClickHandler);
-  }
-
-  _favoriteClickHandler() {
-    this._data.point[`is_favorite`] = !this._data.point[`is_favorite`];
-    this.updateData(this._data);
   }
 
   _submitClickHandler(evt) {
@@ -43,18 +39,19 @@ export default class EventFormView extends SmartView {
     this._callbacks.submit();
   }
 
-  _eventTypeClickHandler(evt) {
+  _favoriteClickHandler(evt) {
     evt.preventDefault();
-    window.console.log(evt.target);
-    if (evt.target.classList.contains(`event__type-input`)) {
-      // this.updateData();
-    }
+    this._callbacks.favorite();
   }
 
-  // _eventTypeClickHandler(evt) {
-  //   evt.preventDefault();
-  //   this._callbacks.eventType();
-  // }
+  _eventTypeClickHandler(evt) {
+    evt.preventDefault();
+    if (evt.target.classList.contains(`event__type-input`)) {
+      this._data.offer = this._data.offers
+        .find((offer) => offer.type === evt.target.value);
+      this.updateData(this._data);
+    }
+  }
 
   setSubmitClickHandler(cb) {
     this._callbacks.submit = cb;
@@ -66,16 +63,14 @@ export default class EventFormView extends SmartView {
   setFavoriteClickHandler(cb) {
     this._callbacks.favorite = cb;
     this.getElement()
-      .querySelector(`.event__favorite-checkbox`)
-      .addEventListener(`click`, this._favoriteClickHandler);
+    .querySelector(`.event__favorite-checkbox`)
+    .addEventListener(`click`, this._favoriteClickHandler);
   }
 
-  // setEventTypeClickHandler(cb) {
-  //   this._callbacks.eventType = cb;
-  //   this.getElement()
-  //     .querySelector(`.event__type-item`)
-  //     .addEventListener(`click`, this._eventTypeClickHandler);
-  // }
+  _restoreHandlers() {
+    this.setSubmitClickHandler(this._submitClickHandler);
+    this._setInnerHandlers();
+  }
 
 }
 
@@ -104,7 +99,7 @@ function createEventEditFormTemplate(trip, includeDestination = true) {
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Transfer</legend>
 
-              ${createTransferListTemplate(offer.type)}
+              ${createEventListTemplate(offer.type)}
 
             </fieldset>
 
@@ -119,7 +114,7 @@ function createEventEditFormTemplate(trip, includeDestination = true) {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${offer.type} to
+            ${offer.type} ${POINT_TYPE_PREFIXES[offer.type]}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${description.name}" list="destination-list-1">
           <datalist id="destination-list-1">
@@ -218,18 +213,16 @@ function createEditFormDestinations(description) {
 }
 
 function createFormOffersTemplate(offer) {
-  const type = offer.type;
-  const offers = offer.offers;
-  return offers.map((off) => {
+  return offer.offers.map((off) => {
     return `\
       <div class="event__offer-selector">
         <input class="event__offer-checkbox  visually-hidden"
-              id="event-offer-${type}-1"
+              id="event-offer-${off.title}-1"
               type="checkbox"
-              name="event-offer-${type}"
+              name="event-offer-${off.title}"
         >
         <label class="event__offer-label"
-              for="event-offer-${type}-1">
+              for="event-offer-${off.title}-1">
           <span class="event__offer-title">
             ${off.title}
           </span>
@@ -249,8 +242,8 @@ function createCitiesListTemplate() {
   }).join(``);
 }
 
-function createTransferListTemplate(selectedType) {
-  return Object.keys(POINT_TYPE_PREFIXES)
+function createEventListTemplate(selectedType) {
+  return OFFER_TYPES
     .map((type) => {
       return `\
       <div class="event__type-item">

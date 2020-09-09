@@ -1,12 +1,13 @@
 import {
+  ACTIVITY_TYPES,
   OFFER_TYPES,
   OFFER_TITLES,
   CITIES,
   DESCRIPTIONS,
-  PHOTOS,
   DECSRIPTION_STRING_LIMIT,
   DECSRIPTION_STRING_MIN,
   OFFER_LIMIT,
+  PHOTOS_LIMIT,
   MOCK_TRIP_LENGTH,
   PRICE_RANGE,
 } from '../consts.js';
@@ -25,12 +26,14 @@ export function getTripsArray() {
 function genereteMockTrip() {
   const description = getDestination();
   const point = getPoint();
-  const offer = getOffer();
+  const offers = getOffer();
+  const offer = getRandomArrayElement(offers);
 
   Object.assign(point, offer);
   return {
     description,
     offer,
+    offers,
     point,
   };
 }
@@ -52,11 +55,11 @@ function getDestination() {
       getRandomInteger(DECSRIPTION_STRING_LIMIT, DECSRIPTION_STRING_MIN))
       .join(``);
 
-  const pictures = Array(getRandomInteger(PHOTOS.length - 1))
+  const pictures = Array(getRandomInteger(PHOTOS_LIMIT))
     .fill()
     .map(() => {
       return {
-        src: PHOTOS[getRandomInteger(PHOTOS.length - 1)],
+        src: getRandomPhoto(),
         description
       };
     });
@@ -69,19 +72,22 @@ function getDestination() {
 }
 
 function getOffer() {
-  const offers = Array(getRandomInteger(OFFER_LIMIT))
-    .fill()
-    .map(() => {
+  return [...OFFER_TYPES, ...ACTIVITY_TYPES]
+    .map((type) => {
+      const offers = getRandomArrayElements(OFFER_TITLES, getRandomInteger(OFFER_LIMIT))
+        .map((title) => {
+          return {
+            title,
+            price: getRandomInteger(PRICE_RANGE.MAX, PRICE_RANGE.MIN)
+          };
+        });
+
       return {
-        title: getRandomArrayElement(OFFER_TITLES),
-        price: getRandomInteger(PRICE_RANGE.MAX, PRICE_RANGE.MIN),
+        type,
+        offers
       };
     });
 
-  return {
-    type: getRandomArrayElement(OFFER_TYPES),
-    offers
-  };
 }
 
 function getPoint() {
@@ -94,6 +100,10 @@ function getPoint() {
     id: generateId(),
     [`is_favorite`]: Boolean(getRandomInteger(1, 0)),
   };
+}
+
+function getRandomPhoto() {
+  return `http://picsum.photos/248/152?r=${Math.random()}`;
 }
 
 function generateId() {

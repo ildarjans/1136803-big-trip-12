@@ -24,20 +24,21 @@ export default class TripPresenter {
     this._dayItem = null;
     this._eventList = null;
 
-    this._eventPresenters = {};
-    // handlers
+    this._eventPresenter = {};
+
     this._changeData = this._changeData.bind(this);
+    this._changeMode = this._changeMode.bind(this);
 
     // closure variables
     this._dayCounter = 0;
     this._tripDay = null;
     this._trips = null;
-    this._sourcestrips = null;
+    this._sourcesTrips = null;
     this._lastDay = null;
   }
 
   init(trips) {
-    this._sourcestrips = trips;
+    this._sourcesTrips = trips;
     this._trips = sortTripsByDate(trips);
 
     if (!this._trips) {
@@ -60,8 +61,11 @@ export default class TripPresenter {
         this._lastDay = this._tripDay;
       }
 
-      const eventPresenter = new EventPresenter(this._eventList, this._changeData);
-      this._eventPresenters[trip.point.id] = eventPresenter;
+      const eventPresenter = new EventPresenter(
+          this._eventList,
+          this._changeData,
+          this._changeMode);
+      this._eventPresenter[trip.point.id] = eventPresenter;
       eventPresenter.init(trip);
 
     });
@@ -73,7 +77,12 @@ export default class TripPresenter {
   _changeData(updatedTrip) {
     this._trips = updateItem(this._trips, updatedTrip);
     const id = updatedTrip.point.id;
-    this._eventPresenters[id].init(updatedTrip);
+    this._eventPresenter[id].init(updatedTrip);
+  }
+
+  _changeMode() {
+    Object.values(this._eventPresenter)
+      .forEach((presenter) => presenter.resetViewMode());
   }
 
   _renderSort() {

@@ -8,12 +8,13 @@ export default class SmartView extends AbstractView {
 
   updateElement() {
     let prevElement = this.getElement();
-    const parent = prevElement.parentElement();
+    const parent = prevElement.parentElement;
     this.resetElement();
 
     const newElement = this.getElement();
     parent.replaceChild(newElement, prevElement);
     prevElement = null;
+    this._restoreHandlers();
   }
 
   updateData(update, justDataUpdate) {
