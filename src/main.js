@@ -9,6 +9,5 @@ const menuPresenter = new MenuPresenter(tripMain);
 
 const trips = getTripsArray();
 
-window.console.log(trips);
 menuPresenter.init();
 tripPresenter.init(trips);

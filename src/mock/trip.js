@@ -52,8 +52,8 @@ function createScheduleTimeObject() {
 function getDestination() {
   const description = getRandomArrayElements(
       DESCRIPTIONS,
-      getRandomInteger(DECSRIPTION_STRING_LIMIT, DECSRIPTION_STRING_MIN))
-      .join(``);
+      getRandomInteger(DECSRIPTION_STRING_LIMIT, DECSRIPTION_STRING_MIN)
+  ).join(``);
 
   const pictures = Array(getRandomInteger(PHOTOS_LIMIT))
     .fill()

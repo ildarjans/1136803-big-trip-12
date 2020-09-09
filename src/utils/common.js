@@ -20,6 +20,6 @@ export function getRandomArrayElement(arr) {
   if (!arr && arr.length === 0) {
     return undefined;
   }
-  return arr[getRandomInteger(arr.length - 1)];
+  return arr[getRandomInteger(arr.length)];
 }
 
