@@ -7,7 +7,6 @@ import {
 } from '../utils/render.js';
 import {EventMode} from '../consts.js';
 
-
 export default class EventPresenter {
   constructor(eventsList, changeData, changeMode) {
     this._eventsList = eventsList;
@@ -95,8 +94,8 @@ export default class EventPresenter {
   }
 
   resetEvent() {
-    this._eventItemComponent.resetElement();
-    this._eventFormComponent.resetElement();
+    removeElement(this._eventItemComponent);
+    removeElement(this._eventFormComponent);
   }
 
 }

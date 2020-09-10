@@ -1,7 +1,8 @@
 export const MOCK_TRIP_LENGTH = 21;
 export const DECSRIPTION_STRING_LIMIT = 5;
 export const DECSRIPTION_STRING_MIN = 1;
-export const OFFER_LIMIT = 3;
+export const OFFER_GENERATE_LIMIT = 6;
+export const OFFER_ITEM_VIEW_LIMIT = 3;
 export const PHOTOS_LIMIT = 3;
 export const DAY_LIMIT_EVENTS = 3;
 export const PRICE_RANGE = {
@@ -11,6 +12,12 @@ export const PRICE_RANGE = {
 export const EventMode = {
   DEFAULT: `DEFAULT`,
   EDIT: `EDIT`
+};
+
+export const SortType = {
+  DEFAULT: `sort-event`,
+  TIME: `sort-time`,
+  PRICE: `sort-price`
 };
 
 export const POINT_TYPE_PREFIXES = {

@@ -115,16 +115,6 @@ export function isSameDate(date1, date2) {
   return false;
 }
 
-export function sortTripsByDate(trips) {
-  return trips.sort((a, b) => {
-    return (
-      a.point.date_from.valueOf() >
-      b.point.date_to.valueOf() ?
-        1 : -1
-    );
-  });
-}
-
 export function getCustomDateLocaleString(dateObj) {
   // return string like this -> yyyy-mm-ddThh:mm
   const {

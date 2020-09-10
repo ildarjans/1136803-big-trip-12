@@ -4,7 +4,7 @@ import {
   getTimeDiffString,
   getCustomTimeString
 } from '../../utils/date.js';
-import {POINT_TYPE_PREFIXES} from '../../consts.js';
+import {POINT_TYPE_PREFIXES, OFFER_ITEM_VIEW_LIMIT} from '../../consts.js';
 
 export default class EventItemView extends AbstractView {
   constructor(trip) {
@@ -78,13 +78,16 @@ function createEventItemTemplate(trip) {
 }
 
 function createEventOffersTemplate(offers) {
-  return offers.map((offer) => {
-    return `\
-    <li class="event__offer">
-      <span class="event__offer-title">${offer.title}</span>
-      &plus;&euro;&nbsp;
-      <span class="event__offer-price">${offer.price}</span>
-    </>`;
-  }).join(``);
+  return offers
+    .slice(0, OFFER_ITEM_VIEW_LIMIT)
+    .map((offer) => {
+      return `\
+      <li class="event__offer">
+        <span class="event__offer-title">${offer.title}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${offer.price}</span>
+      </>`;
+    })
+    .join(``);
 }
 

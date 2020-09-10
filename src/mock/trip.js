@@ -6,13 +6,16 @@ import {
   DESCRIPTIONS,
   DECSRIPTION_STRING_LIMIT,
   DECSRIPTION_STRING_MIN,
-  OFFER_LIMIT,
+  OFFER_GENERATE_LIMIT,
   PHOTOS_LIMIT,
   MOCK_TRIP_LENGTH,
   PRICE_RANGE,
 } from '../consts.js';
-
-import {getRandomInteger, getRandomArrayElements, getRandomArrayElement} from '../utils/common.js';
+import {
+  getRandomInteger,
+  getRandomArrayElements,
+  getRandomArrayElement
+} from '../utils/common.js';
 
 export function getTripsArray() {
   return (
@@ -74,7 +77,7 @@ function getDestination() {
 function getOffer() {
   return [...OFFER_TYPES, ...ACTIVITY_TYPES]
     .map((type) => {
-      const offers = getRandomArrayElements(OFFER_TITLES, getRandomInteger(OFFER_LIMIT))
+      const offers = getRandomArrayElements(OFFER_TITLES, getRandomInteger(OFFER_GENERATE_LIMIT))
         .map((title) => {
           return {
             title,
