@@ -1,19 +1,18 @@
 import {
-  TRASNFER_TYPES,
   ACTIVITY_TYPES,
+  OFFER_TYPES,
+  OFFER_TITLES,
   CITIES,
-  OFFERS,
   DESCRIPTIONS,
-  PHOTOS,
   DECSRIPTION_STRING_LIMIT,
   DECSRIPTION_STRING_MIN,
   OFFER_LIMIT,
-  MOCK_TRIP_LENGTH
+  PHOTOS_LIMIT,
+  MOCK_TRIP_LENGTH,
+  PRICE_RANGE,
 } from '../consts.js';
 
-import {getRandomInteger, getRandomArrayElements} from '../utils/common.js';
-
-const allEventTypes = [...TRASNFER_TYPES, ...ACTIVITY_TYPES];
+import {getRandomInteger, getRandomArrayElements, getRandomArrayElement} from '../utils/common.js';
 
 export function getTripsArray() {
   return (
@@ -23,19 +22,19 @@ export function getTripsArray() {
   );
 }
 
+
 function genereteMockTrip() {
-  const description = getRandomArrayElements(
-      DESCRIPTIONS,
-      getRandomInteger(DECSRIPTION_STRING_LIMIT, DECSRIPTION_STRING_MIN)
-  ).join(``);
+  const description = getDestination();
+  const point = getPoint();
+  const offers = getOffer();
+  const offer = getRandomArrayElement(offers);
+
+  Object.assign(point, offer);
   return {
-    type: allEventTypes[getRandomInteger(allEventTypes.length - 1)],
-    city: CITIES[getRandomInteger(CITIES.length - 1)],
-    schedule: createScheduleTimeObject(),
-    price: getRandomInteger(100),
-    offers: getRandomArrayElements(OFFERS, getRandomInteger(OFFER_LIMIT)),
     description,
-    photos: PHOTOS.slice(getRandomInteger(PHOTOS.length - 1))
+    offer,
+    offers,
+    point,
   };
 }
 
@@ -48,4 +47,67 @@ function createScheduleTimeObject() {
     start,
     finish,
   };
+}
+
+function getDestination() {
+  const description = getRandomArrayElements(
+      DESCRIPTIONS,
+      getRandomInteger(DECSRIPTION_STRING_LIMIT, DECSRIPTION_STRING_MIN)
+  ).join(``);
+
+  const pictures = Array(getRandomInteger(PHOTOS_LIMIT))
+    .fill()
+    .map(() => {
+      return {
+        src: getRandomPhoto(),
+        description
+      };
+    });
+
+  return {
+    description,
+    name: getRandomArrayElement(CITIES),
+    pictures,
+  };
+}
+
+function getOffer() {
+  return [...OFFER_TYPES, ...ACTIVITY_TYPES]
+    .map((type) => {
+      const offers = getRandomArrayElements(OFFER_TITLES, getRandomInteger(OFFER_LIMIT))
+        .map((title) => {
+          return {
+            title,
+            price: getRandomInteger(PRICE_RANGE.MAX, PRICE_RANGE.MIN)
+          };
+        });
+
+      return {
+        type,
+        offers
+      };
+    });
+
+}
+
+function getPoint() {
+  const schedule = createScheduleTimeObject();
+  return {
+    [`base_price`]: getRandomInteger(9999, 100),
+    destination: ``,
+    [`date_from`]: schedule.start,
+    [`date_to`]: schedule.finish,
+    id: generateId(),
+    [`is_favorite`]: Boolean(getRandomInteger(1, 0)),
+  };
+}
+
+function getRandomPhoto() {
+  return `http://picsum.photos/248/152?r=${Math.random()}`;
+}
+
+function generateId() {
+  const a = getRandomInteger(Date.now()).toString(16);
+  const b = getRandomInteger(Date.now()).toString(16);
+  return `${a}${b}`;
 }

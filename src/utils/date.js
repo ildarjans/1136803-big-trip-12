@@ -20,6 +20,10 @@ function getCustomDateObject(dateObj, ...literals) {
     h: () => `${zeroPad(dateObj.getHours())}`,
     m: () => `${zeroPad(dateObj.getMinutes())}`,
   };
+  if (typeof dateObj === `string`) {
+    dateObj = new Date(dateObj);
+  }
+
   if (Object.prototype.toString.call(dateObj) !== `[object Date]`) {
     throw new Error(`first parametr must be Date object`);
   }
@@ -114,8 +118,8 @@ export function isSameDate(date1, date2) {
 export function sortTripsByDate(trips) {
   return trips.sort((a, b) => {
     return (
-      a.schedule.start.valueOf() >
-      b.schedule.start.valueOf() ?
+      a.point.date_from.valueOf() >
+      b.point.date_to.valueOf() ?
         1 : -1
     );
   });
@@ -161,4 +165,3 @@ export function getCustomTimeString(dateObj) {
 
   return `${hour}:${month}`;
 }
-

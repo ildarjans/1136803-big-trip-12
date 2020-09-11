@@ -1,10 +1,19 @@
-const MOCK_TRIP_LENGTH = 21;
-const DECSRIPTION_STRING_LIMIT = 5;
-const DECSRIPTION_STRING_MIN = 1;
-const OFFER_LIMIT = 3;
-const DAY_LIMIT_EVENTS = 3;
+export const MOCK_TRIP_LENGTH = 21;
+export const DECSRIPTION_STRING_LIMIT = 5;
+export const DECSRIPTION_STRING_MIN = 1;
+export const OFFER_LIMIT = 3;
+export const PHOTOS_LIMIT = 3;
+export const DAY_LIMIT_EVENTS = 3;
+export const PRICE_RANGE = {
+  MIN: 10,
+  MAX: 199
+};
+export const EventMode = {
+  DEFAULT: `DEFAULT`,
+  EDIT: `EDIT`
+};
 
-const TYPE_PREFIXES = {
+export const POINT_TYPE_PREFIXES = {
   'Taxi': `to`,
   'Bus': `to`,
   'Train': `to`,
@@ -12,12 +21,12 @@ const TYPE_PREFIXES = {
   'Transport': `to`,
   'Drive': `to`,
   'Flight': `to`,
-  'Check-in': `at`,
+  'Check-in': `in`,
   'Sightseeing': `in`,
   'Restaurant': `in`,
 };
 
-const TRASNFER_TYPES = [
+export const OFFER_TYPES = [
   `Taxi`,
   `Bus`,
   `Train`,
@@ -27,13 +36,13 @@ const TRASNFER_TYPES = [
   `Flight`,
 ];
 
-const ACTIVITY_TYPES = [
+export const ACTIVITY_TYPES = [
   `Check-in`,
   `Sightseeing`,
   `Restaurant`
 ];
 
-const CITIES = [
+export const CITIES = [
   `Amsterdam`,
   `Geneva`,
   `Chamonix`,
@@ -48,35 +57,25 @@ const CITIES = [
   `Napoli`,
 ];
 
-const OFFERS = [
-  {
-    type: `luggage`,
-    title: `Add luggage`,
-    price: 50
-  },
-  {
-    type: `comfort`,
-    title: `Switch to comfort class`,
-    price: 80
-  },
-  {
-    type: `meal`,
-    title: `Add meal`,
-    price: 200
-  },
-  {
-    type: `seats`,
-    title: `Choose seats`,
-    price: 50
-  },
-  {
-    type: `train`,
-    title: `Travel by train`,
-    price: 40
-  },
+
+export const OFFER_TITLES = [
+  `Switch to comfort class`,
+  `Upgrade to a business class`,
+  `Choose the radio station`,
+  `Add luggage`,
+  `Add meal`,
+  `Choose seats`,
+  `add return ticket options`,
+  `add transfer`,
+  `add guide`,
+  `Choose live music`,
+  `Order a breakfast`,
+  `Book a taxi at the arrival point`,
+  `Drive quickly, I'm in a hurry`,
+  `Choose the radio station`,
 ];
 
-const DESCRIPTIONS = `\n
+export const DESCRIPTIONS = `\n
 Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n
 Cras aliquet varius magna, non porta ligula feugiat eget.\n
 Fusce tristique felis at fermentum pharetra.\n
@@ -88,28 +87,6 @@ Aliquam erat volutpat.\n
 Nunc fermentum tortor ac porta dapibus.\n
 In rutrum ac purus sit amet tempus`.split(`\n`);
 
-const PHOTOS = [
-  `http://picsum.photos/248/152?r=${Math.random()}`,
-  `http://picsum.photos/248/152?r=${Math.random()}`,
-  `http://picsum.photos/248/152?r=${Math.random()}`
-];
-
-const EVENT_MESSAGES = {
+export const EVENT_MESSAGES = {
   EMPTY: `Click New Event to create your first point`
-};
-
-export {
-  MOCK_TRIP_LENGTH,
-  TRASNFER_TYPES,
-  ACTIVITY_TYPES,
-  TYPE_PREFIXES,
-  CITIES,
-  OFFERS,
-  DESCRIPTIONS,
-  PHOTOS,
-  DECSRIPTION_STRING_LIMIT,
-  DECSRIPTION_STRING_MIN,
-  DAY_LIMIT_EVENTS,
-  OFFER_LIMIT,
-  EVENT_MESSAGES,
 };

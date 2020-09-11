@@ -4,55 +4,53 @@ import {
   getTimeDiffString,
   getCustomTimeString
 } from '../../utils/date.js';
-import {TYPE_PREFIXES} from '../../consts.js';
+import {POINT_TYPE_PREFIXES} from '../../consts.js';
 
 export default class EventItemView extends AbstractView {
   constructor(trip) {
     super();
     this._trip = trip;
-    this._clickHandler = this._clickHandler.bind(this);
+    this._dropDownClickHandler = this._dropDownClickHandler.bind(this);
   }
   _getTemplate() {
     return createEventItemTemplate(this._trip);
   }
 
-  _clickHandler(evt) {
+  _dropDownClickHandler(evt) {
     evt.preventDefault();
     this._callbacks.click();
   }
 
-  setClickHandler(cb) {
+  setDropdownClickHandler(cb) {
     this._callbacks.click = cb;
     this.getElement()
       .querySelector(`.event__rollup-btn`)
-      .addEventListener(`click`, this._clickHandler);
+      .addEventListener(`click`, this._dropDownClickHandler);
   }
 
 }
 
 function createEventItemTemplate(trip) {
   const {
-    type,
-    city,
-    schedule,
-    price,
-    offers,
+    description,
+    point,
+    offer,
   } = trip;
 
-  const dateStartEvent = getCustomDateLocaleString(schedule.start);
-  const dateEndEvent = getCustomDateLocaleString(schedule.finish);
-  const timeStartEvent = getCustomTimeString(schedule.start);
-  const timeEndEvent = getCustomTimeString(schedule.finish);
-  const eventDuration = getTimeDiffString(schedule.start, schedule.finish);
-  const prefix = TYPE_PREFIXES[type];
+  const dateStartEvent = getCustomDateLocaleString(point.date_from);
+  const dateEndEvent = getCustomDateLocaleString(point.date_to);
+  const timeStartEvent = getCustomTimeString(point.date_from);
+  const timeEndEvent = getCustomTimeString(point.date_to);
+  const eventDuration = getTimeDiffString(point.date_from, point.date_to);
+  const prefix = POINT_TYPE_PREFIXES[offer.type];
 
   return (
     `<li class="trip-events__item">
       <div class="event">
       <div class="event__type">
-        <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
+        <img class="event__type-icon" width="42" height="42" src="img/icons/${offer.type}.png" alt="Event type icon">
       </div>
-        <h3 class="event__title">${type} ${prefix} ${city}</h3>
+        <h3 class="event__title">${offer.type} ${prefix} ${description.name}</h3>
 
       <div class="event__schedule">
         <p class="event__time">
@@ -63,12 +61,12 @@ function createEventItemTemplate(trip) {
         <p class="event__duration">${eventDuration}</p>
       </div>
       <p class="event__price">
-        &euro;&nbsp;<span class="event__price-value">${price}</span>
+        &euro;&nbsp;<span class="event__price-value">${point.base_price}</span>
       </p>
 
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        ${createEventOffersTemplate(offers)}
+        ${createEventOffersTemplate(offer.offers)}
       </ul>
 
       <button class="event__rollup-btn" type="button">
