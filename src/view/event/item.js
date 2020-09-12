@@ -1,9 +1,10 @@
 import AbstractView from '../abstract.js';
 import {
   getCustomDateLocaleString,
-  getTimeDiffString,
+  getEventDurationString,
   getCustomTimeString
 } from '../../utils/date.js';
+
 import {POINT_TYPE_PREFIXES, OFFER_ITEM_VIEW_LIMIT} from '../../consts.js';
 
 export default class EventItemView extends AbstractView {
@@ -41,7 +42,7 @@ function createEventItemTemplate(trip) {
   const dateEndEvent = getCustomDateLocaleString(point.date_to);
   const timeStartEvent = getCustomTimeString(point.date_from);
   const timeEndEvent = getCustomTimeString(point.date_to);
-  const eventDuration = getTimeDiffString(point.date_from, point.date_to);
+  const eventDuration = getEventDurationString(point.date_from, point.date_to);
   const prefix = POINT_TYPE_PREFIXES[offer.type];
 
   return (

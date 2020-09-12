@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 function getCustomDateObject(dateObj, ...literals) {
   /**
   * function apply string literals
@@ -91,18 +93,18 @@ export function getTimeDiffString(date1, date2) {
   .trim();
 }
 
-export function getFormDateString(dateObj) {
-  // return string like this -> dd/mm/yy hh:mm
-  const {
-    yy: year,
-    mm: month,
-    dd: date,
-    h: hour,
-    m: minutes,
-  } = getCustomDateObject(dateObj, `yy`, `mm`, `dd`, `h`, `m`);
+// export function getFormDateString(dateObj) {
+//   // return string like this -> dd/mm/yy hh:mm
+//   const {
+//     yy: year,
+//     mm: month,
+//     dd: date,
+//     h: hour,
+//     m: minutes,
+//   } = getCustomDateObject(dateObj, `yy`, `mm`, `dd`, `h`, `m`);
 
-  return `${date}/${month}/${year} ${hour}:${minutes}`;
-}
+//   return `${date}/${month}/${year} ${hour}:${minutes}`;
+// }
 
 export function isSameDate(date1, date2) {
   // compare date strings like yyyy-mm-dd
@@ -154,4 +156,25 @@ export function getCustomTimeString(dateObj) {
   } = getCustomDateObject(dateObj, `h`, `m`);
 
   return `${hour}:${month}`;
+}
+
+export function getFormDateString(date) {
+  if (date instanceof Date) {
+    return moment(date).format(`DD/MM/YY HH:mm`);
+  }
+  return ``;
+}
+
+
+export function getEventDurationString(dateFrom, dateTo) {
+  const from = moment(dateFrom);
+  const to = moment(dateTo);
+  const duration = moment.duration(to.diff(from));
+  let d = duration.days();
+  let h = duration.hours();
+  let m = duration.minutes();
+  d = d ? `${zeroPad(d)}D` : ``;
+  h = h ? `${zeroPad(h)}H` : ``;
+  m = m ? `${zeroPad(m)}M` : ``;
+  return `${d} ${h} ${m}`;
 }

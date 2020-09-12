@@ -28,3 +28,4 @@ export function sortTripsByDate(a, b) {
       1 : -1
   );
 }
+
