@@ -81,7 +81,7 @@ function createEventOffersTemplate(offers) {
   return offers
     .slice(0, OFFER_ITEM_VIEW_LIMIT)
     .map((offer) => {
-      return `\
+      return `
       <li class="event__offer">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
