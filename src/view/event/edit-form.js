@@ -1,11 +1,11 @@
 import {getFormDateString} from '../../utils/date.js';
-// import {getFormDateString} from '../../utils/trip.js';
 import SmartView from '../smart.js';
 import {
   OFFER_TYPES,
   ACTIVITY_TYPES,
   POINT_TYPE_PREFIXES,
-  CITIES
+  CITIES,
+  MOMENT
 } from '../../consts.js';
 import flatpickr from 'flatpickr';
 import '../../../node_modules/flatpickr/dist/flatpickr.min.css';
@@ -50,7 +50,7 @@ export default class EventFormView extends SmartView {
         {
           enableTime: true,
           [`time_24hr`]: true,
-          dateFormat: `d/m/y H:i`,
+          dateFormat: MOMENT.FORD_DATE_FORMAT,
           onChange: this._dateInputChangeHandler
         }
     );

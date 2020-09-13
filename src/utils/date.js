@@ -93,19 +93,6 @@ export function getTimeDiffString(date1, date2) {
   .trim();
 }
 
-// export function getFormDateString(dateObj) {
-//   // return string like this -> dd/mm/yy hh:mm
-//   const {
-//     yy: year,
-//     mm: month,
-//     dd: date,
-//     h: hour,
-//     m: minutes,
-//   } = getCustomDateObject(dateObj, `yy`, `mm`, `dd`, `h`, `m`);
-
-//   return `${date}/${month}/${year} ${hour}:${minutes}`;
-// }
-
 export function isSameDate(date1, date2) {
   // compare date strings like yyyy-mm-dd
   if (Object.prototype.toString.call(date1) === `[object Date]` &&
