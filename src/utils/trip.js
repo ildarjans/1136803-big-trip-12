@@ -22,10 +22,6 @@ export function sortEventsByTime(a, b) {
 }
 
 export function sortTripsByDate(a, b) {
-  return (
-    a.point.date_from.valueOf() >
-    b.point.date_to.valueOf() ?
-      1 : -1
-  );
+  return a.point.date_from.getTime() - b.point.date_to.getTime();
 }
 
