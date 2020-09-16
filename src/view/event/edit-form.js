@@ -1,18 +1,21 @@
 import {getFormDateString} from '../../utils/date.js';
 import SmartView from '../smart.js';
-
 import {
   OFFER_TYPES,
   ACTIVITY_TYPES,
   POINT_TYPE_PREFIXES,
-  CITIES
+  CITIES,
+  MOMENT
 } from '../../consts.js';
+import flatpickr from 'flatpickr';
+import '../../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 export default class EventFormView extends SmartView {
   constructor(data, destination = true) {
     super();
     this._data = data;
     this._destination = destination;
+    this._datePicker = null;
 
     this._bindInnerHandlers();
     this._setInnerHandlers();
@@ -26,12 +29,44 @@ export default class EventFormView extends SmartView {
     this._submitClickHandler = this._submitClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._eventTypeClickHandler = this._eventTypeClickHandler.bind(this);
+    this._dateInputChangeHandler = this._dateInputChangeHandler.bind(this);
   }
 
   _setInnerHandlers() {
+    this._setDatePicker();
     this.getElement()
       .querySelector(`.event__type-list`)
       .addEventListener(`change`, this._eventTypeClickHandler);
+  }
+
+  _setDatePicker() {
+    if (this._datePicker) {
+      this._datePicker.forEach((dp) => dp.destroy());
+      this._datePicker = null;
+    }
+
+    this._datePicker = flatpickr(
+        this.getElement().querySelectorAll(`.event__input--time`),
+        {
+          enableTime: true,
+          [`time_24hr`]: true,
+          dateFormat: MOMENT.FORD_DATE_FORMAT,
+          onChange: this._dateInputChangeHandler
+        }
+    );
+  }
+
+  _dateInputChangeHandler(selectedDate, dateStr, self) {
+    const inputName = self.input.name;
+    switch (inputName) {
+      case (`event-start-time`):
+        this.updateData(this._data.point[`date_from`] = selectedDate[0]);
+        break;
+      case (`event-end-time`):
+        this.updateData(this._data.point[`date_to`] = selectedDate[0]);
+        break;
+    }
+
   }
 
   _submitClickHandler(evt) {

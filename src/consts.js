@@ -5,6 +5,9 @@ export const OFFER_GENERATE_LIMIT = 6;
 export const OFFER_ITEM_VIEW_LIMIT = 3;
 export const PHOTOS_LIMIT = 3;
 export const DAY_LIMIT_EVENTS = 3;
+export const MOMENT = {
+  FORD_DATE_FORMAT: `d/m/y H:i`
+};
 export const PRICE_RANGE = {
   MIN: 10,
   MAX: 199

@@ -96,6 +96,7 @@ export default class TripPresenter {
 
   _changeData(updatedTrip) {
     this._trips = updateItem(this._trips, updatedTrip);
+    this._sourceTrips = updateItem(this._sourceTrips, updatedTrip);
     const id = updatedTrip.point.id;
     this._eventPresenter[id].init(updatedTrip);
   }
