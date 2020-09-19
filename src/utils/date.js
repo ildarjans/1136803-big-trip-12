@@ -147,10 +147,7 @@ export function getCustomTimeString(dateObj) {
 }
 
 export function getFormDateString(date) {
-  if (date instanceof Date) {
-    return moment(date).format(MOMENT.FORM_DATE_FORMAT);
-  }
-  return ``;
+  return date instanceof Date ? moment(date).format(MOMENT.FORM_DATE_FORMAT) : ``;
 }
 
 export function parseFormDateString(dateStr) {
