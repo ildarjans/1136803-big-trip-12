@@ -771,7 +771,9 @@ main {
     text-align: center; }
   .event__input--price {
     width: 66px; }
-
+  .event__input--invalid {
+    color: #f00;
+  }
 .event__save-btn {
   margin-right: 18px; }
 

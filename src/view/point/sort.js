@@ -1,9 +1,10 @@
 import AbstractView from '../abstract.js';
 import {SortType} from '../../consts.js';
 
-export default class EventSortView extends AbstractView {
-  constructor() {
+export default class PointSortView extends AbstractView {
+  constructor(currentSortType) {
     super();
+    this._currentSortType = currentSortType;
     this._sortClickHandler = this._sortClickHandler.bind(this);
   }
 
@@ -32,7 +33,7 @@ export default class EventSortView extends AbstractView {
             name="trip-sort"
             value="sort-event"
             data-sort-type="${SortType.DEFAULT}"
-            checked
+            ${this._currentSortType === SortType.DEFAULT ? `checked` : ``}
           >
           <label class="trip-sort__btn" for="sort-event">Event</label>
         </div>
@@ -45,6 +46,8 @@ export default class EventSortView extends AbstractView {
             name="trip-sort"
             value="sort-time"
             data-sort-type="${SortType.TIME}"
+            ${this._currentSortType === SortType.TIME ? `checked` : ``}
+
           >
           <label class="trip-sort__btn" for="sort-time">
             Time
@@ -62,6 +65,8 @@ export default class EventSortView extends AbstractView {
             name="trip-sort"
             value="sort-price"
             data-sort-type="${SortType.PRICE}"
+            ${this._currentSortType === SortType.PRICE ? `checked` : ``}
+
           >
           <label class="trip-sort__btn" for="sort-price">
             Price
