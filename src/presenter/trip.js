@@ -16,7 +16,6 @@ import {
   removeElement
 } from '../utils/render.js';
 import FilterPresenter from './filter.js';
-import SortListView from '../../../taskmanager/src/view/sort-list.js';
 
 export default class TripPresenter {
   constructor(pointsContainer, pointModel, filterModel) {

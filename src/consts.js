@@ -13,8 +13,6 @@ export const FLATPICKR = {
 export const MOMENT = {
   FORM_DATE_FORMAT: `DD/MM/YY HH:mm`
 };
-export const INVALID_MESSAGE = `Event finish time can't be earlier than start time`;
-export const INVALID_COLOR = `f00`;
 
 export const PRICE_RANGE = {
   MIN: 10,

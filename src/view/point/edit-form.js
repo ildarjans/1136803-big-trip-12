@@ -2,7 +2,6 @@ import {
   getFormDateString,
   parseFormDateString,
   isDateBefore,
-  isDateAfter,
 } from '../../utils/date.js';
 import SmartView from '../smart.js';
 import {
@@ -12,8 +11,6 @@ import {
   CITIES,
   FLATPICKR,
   BLANK_EVENT,
-  INVALID_MESSAGE,
-  INVALID_COLOR,
 } from '../../consts.js';
 import flatpickr from 'flatpickr';
 import '../../../node_modules/flatpickr/dist/flatpickr.min.css';
@@ -72,15 +69,12 @@ export default class PointFormView extends SmartView {
     const dateFrom = parseFormDateString(eventStart.value);
     const dateTo = parseFormDateString(eventEnd.value);
     if (isDateBefore(dateFrom, dateTo)) {
-      eventEnd.setCustomValidity(``);
       eventEnd.style.color = `unset`;
       submitBtn.disabled = false;
     } else {
-      eventEnd.setCustomValidity(INVALID_MESSAGE);
       eventEnd.classList.add(`event__input--invalid`);
       submitBtn.disabled = true;
     }
-
   }
 
   _deleteClickHandler(evt) {
@@ -131,7 +125,6 @@ export default class PointFormView extends SmartView {
     self
       .querySelector(`.event__input--destination`)
       .addEventListener(`change`, this._cityChangeHandler);
-
   }
 
   _setDatePicker() {

@@ -186,7 +186,3 @@ export function isToday(date, now = new Date()) {
 export function isDateBefore(date, dateBefore) {
   return moment(date).isBefore(dateBefore);
 }
-
-export function isDateAfter(date, dateAfter) {
-  return moment(date).isAfter(dateAfter);
-}
