@@ -7,7 +7,7 @@ import {
 
 import {POINT_TYPE_PREFIXES, OFFER_ITEM_VIEW_LIMIT} from '../../consts.js';
 
-export default class EventItemView extends AbstractView {
+export default class PointItemView extends AbstractView {
   constructor(trip) {
     super();
     this._trip = trip;
@@ -32,26 +32,22 @@ export default class EventItemView extends AbstractView {
 }
 
 function createEventItemTemplate(trip) {
-  const {
-    description,
-    point,
-    offer,
-  } = trip;
+  const point = trip.point;
 
   const dateStartEvent = getCustomDateLocaleString(point.date_from);
   const dateEndEvent = getCustomDateLocaleString(point.date_to);
   const timeStartEvent = getCustomTimeString(point.date_from);
   const timeEndEvent = getCustomTimeString(point.date_to);
   const eventDuration = getEventDurationString(point.date_from, point.date_to);
-  const prefix = POINT_TYPE_PREFIXES[offer.type];
+  const prefix = POINT_TYPE_PREFIXES[point.type];
 
   return (
     `<li class="trip-events__item">
       <div class="event">
       <div class="event__type">
-        <img class="event__type-icon" width="42" height="42" src="img/icons/${offer.type}.png" alt="Event type icon">
+        <img class="event__type-icon" width="42" height="42" src="img/icons/${point.type}.png" alt="Event type icon">
       </div>
-        <h3 class="event__title">${offer.type} ${prefix} ${description.name}</h3>
+        <h3 class="event__title">${point.type} ${prefix} ${point.destination.name}</h3>
 
       <div class="event__schedule">
         <p class="event__time">
@@ -67,7 +63,7 @@ function createEventItemTemplate(trip) {
 
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        ${createEventOffersTemplate(offer.offers)}
+        ${createEventOffersTemplate(point.offers)}
       </ul>
 
       <button class="event__rollup-btn" type="button">

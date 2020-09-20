@@ -1,3 +1,4 @@
+import {getOffers} from './mock/offers.js';
 export const MOCK_TRIP_LENGTH = 21;
 export const DECSRIPTION_STRING_LIMIT = 5;
 export const DECSRIPTION_STRING_MIN = 1;
@@ -5,14 +6,19 @@ export const OFFER_GENERATE_LIMIT = 6;
 export const OFFER_ITEM_VIEW_LIMIT = 3;
 export const PHOTOS_LIMIT = 3;
 export const DAY_LIMIT_EVENTS = 3;
-export const MOMENT = {
-  FORD_DATE_FORMAT: `d/m/y H:i`
+export const FLATPICKR = {
+  FORM_DATE_FORMAT: `d/m/y H:i`
 };
+
+export const MOMENT = {
+  FORM_DATE_FORMAT: `DD/MM/YY HH:mm`
+};
+
 export const PRICE_RANGE = {
   MIN: 10,
   MAX: 199
 };
-export const EventMode = {
+export const PointMode = {
   DEFAULT: `DEFAULT`,
   EDIT: `EDIT`
 };
@@ -21,6 +27,24 @@ export const SortType = {
   DEFAULT: `sort-event`,
   TIME: `sort-time`,
   PRICE: `sort-price`
+};
+
+export const FilterType = {
+  EVERYTHING: `everything`,
+  PAST: `past`,
+  FUTURE: `future`,
+};
+
+export const UserAction = {
+  ADD_POINT: `ADD_POINT`,
+  UPDATE_POINT: `UPDATE_POINT`,
+  DELETE_POINT: `DELETE_POINT`,
+};
+
+export const UpdateType = {
+  PATCH: `PATCH`,
+  MINOR: `MINOR`,
+  MAJOR: `MAJOR`,
 };
 
 export const POINT_TYPE_PREFIXES = {
@@ -100,3 +124,21 @@ In rutrum ac purus sit amet tempus`.split(`\n`);
 export const EVENT_MESSAGES = {
   EMPTY: `Click New Event to create your first point`
 };
+
+export const BLANK_EVENT = {
+  point: {
+    [`base_price`]: 0,
+    destination: {
+      description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
+      name: `Chamonix`,
+      pictures: [],
+    },
+    [`date_from`]: new Date(),
+    [`date_to`]: new Date(),
+    [`is_favorite`]: false,
+    offers: [],
+    type: `Train`
+  },
+  offers: getOffers()
+};
+

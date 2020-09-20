@@ -1,4 +1,5 @@
 import moment from 'moment';
+import {MOMENT} from '../consts.js';
 
 function getCustomDateObject(dateObj, ...literals) {
   /**
@@ -146,10 +147,11 @@ export function getCustomTimeString(dateObj) {
 }
 
 export function getFormDateString(date) {
-  if (date instanceof Date) {
-    return moment(date).format(`DD/MM/YY HH:mm`);
-  }
-  return ``;
+  return date instanceof Date ? moment(date).format(MOMENT.FORM_DATE_FORMAT) : ``;
+}
+
+export function parseFormDateString(dateStr) {
+  return moment(dateStr, MOMENT.FORM_DATE_FORMAT).toDate();
 }
 
 
@@ -164,4 +166,20 @@ export function getEventDurationString(dateFrom, dateTo) {
   h = h ? `${zeroPad(h)}H` : ``;
   m = m ? `${zeroPad(m)}M` : ``;
   return `${d} ${h} ${m}`;
+}
+
+export function isDayBefore(date, now = new Date()) {
+  return moment(date).isBefore(now, `day`);
+}
+
+export function isDayAfter(date, now = new Date()) {
+  return moment(date).isAfter(now, `day`);
+}
+
+export function isToday(date, now = new Date()) {
+  return moment(date).isSame(now, `day`);
+}
+
+export function isDateBefore(date, dateBefore) {
+  return moment(date).isBefore(dateBefore);
 }
