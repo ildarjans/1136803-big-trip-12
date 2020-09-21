@@ -5,7 +5,7 @@ import {
 } from '../../utils/date.js';
 import SmartView from '../smart.js';
 import {
-  OFFER_TYPES,
+  TRANSPORT_TYPES,
   ACTIVITY_TYPES,
   POINT_TYPE_PREFIXES,
   CITIES,
@@ -401,7 +401,7 @@ function createCitiesListTemplate() {
 }
 
 function createEventListTemplate(selectedType) {
-  return OFFER_TYPES
+  return TRANSPORT_TYPES
     .map((type) => {
       return `\
       <div class="event__type-item">

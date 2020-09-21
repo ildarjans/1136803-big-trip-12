@@ -49,7 +49,7 @@ export default class NewPointPresenter {
     removeElement(this._pointFormComponent);
     this._pointFormComponent = null;
 
-    document.removeEventListener(`keyddown`, this._escKeyDownHandler);
+    document.removeEventListener(`keydown`, this._escKeyDownHandler);
 
   }
 

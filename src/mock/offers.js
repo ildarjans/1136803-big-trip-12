@@ -1,6 +1,6 @@
 import {
   ACTIVITY_TYPES,
-  OFFER_TYPES,
+  TRANSPORT_TYPES,
   OFFER_TITLES,
   OFFER_GENERATE_LIMIT,
   PRICE_RANGE,
@@ -11,7 +11,7 @@ import {
 } from '../utils/common.js';
 
 export function getOffers() {
-  return [...OFFER_TYPES, ...ACTIVITY_TYPES]
+  return [...TRANSPORT_TYPES, ...ACTIVITY_TYPES]
     .map((type) => {
       const offers = getRandomArrayElements(OFFER_TITLES, getRandomInteger(OFFER_GENERATE_LIMIT))
         .map((title) => {

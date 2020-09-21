@@ -183,3 +183,13 @@ export function isToday(date, now = new Date()) {
 export function isDateBefore(date, dateBefore) {
   return moment(date).isBefore(dateBefore);
 }
+
+export function getEventDurationInMinutes(dateFrom, dateTo) {
+  const from = moment(dateFrom);
+  const to = moment(dateTo);
+  return moment.duration(to.diff(from));
+}
+
+export function convertMsInHours(timeInMs) {
+  return moment.duration(timeInMs).hours();
+}

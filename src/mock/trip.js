@@ -5,7 +5,7 @@ import {
   DECSRIPTION_STRING_MIN,
   PHOTOS_LIMIT,
   MOCK_TRIP_LENGTH,
-  OFFER_TYPES,
+  TRANSPORT_TYPES,
   ACTIVITY_TYPES
 } from '../consts.js';
 import {
@@ -69,7 +69,7 @@ function getDestination() {
 
 function getPoint(allOffers) {
   const schedule = createScheduleTimeObject();
-  const type = getRandomArrayElement([...OFFER_TYPES, ...ACTIVITY_TYPES]);
+  const type = getRandomArrayElement([...TRANSPORT_TYPES, ...ACTIVITY_TYPES]);
   const offersByType = allOffers.filter((offer) => offer.type === type)[0];
   return {
     [`base_price`]: getRandomInteger(9999, 100),

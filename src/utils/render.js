@@ -6,6 +6,13 @@ export function createDOMElement(content) {
   return wrapper.firstChild;
 }
 
+export function renderAfterFirstChild(container, element) {
+  container = getAbstractClassDOMElement(container);
+  element = getAbstractClassDOMElement(element);
+  const firstChild = container.children[0];
+  firstChild.insertAdjacentElement(`afterend`, element);
+}
+
 export function renderLastPlaceElement(container, element) {
   container = getAbstractClassDOMElement(container);
   element = getAbstractClassDOMElement(element);
