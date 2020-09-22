@@ -23,6 +23,14 @@ export const PointMode = {
   EDIT: `EDIT`
 };
 
+export const MenuTabs = {
+  STATS: `Stats`,
+  TABLE: `Table`,
+};
+
+export const TAB_ACTIVE_CLASS = `trip-tabs__btn--active`;
+
+
 export const SortType = {
   DEFAULT: `sort-event`,
   TIME: `sort-time`,
@@ -60,7 +68,7 @@ export const POINT_TYPE_PREFIXES = {
   'Restaurant': `in`,
 };
 
-export const OFFER_TYPES = [
+export const TRANSPORT_TYPES = [
   `Taxi`,
   `Bus`,
   `Train`,

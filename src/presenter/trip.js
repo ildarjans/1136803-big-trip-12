@@ -24,7 +24,7 @@ export default class TripPresenter {
     this._filterModel = filterModel;
 
     this._pointSort = null;
-    this._pointEmptyMessage = new PointMessageView(EVENT_MESSAGES.EMPTY);
+    this._pointEmptyMessage = null;
     this._daysList = null;
     this._dayItem = null;
     this._pointList = null;
@@ -37,9 +37,9 @@ export default class TripPresenter {
     this._newPointPresenter = new NewPointPresenter(
         this._pointsContainer,
         this._filterModel,
-
         this._changeData,
-        this._changeMode);
+        this._changeMode
+    );
   }
 
   init() {
@@ -51,6 +51,24 @@ export default class TripPresenter {
   }
   createPoint(enableButton) {
     this._newPointPresenter.init(enableButton);
+  }
+
+  destroy() {
+    if (this._pointEmptyMessage) {
+      removeElement(this._pointEmptyMessage);
+    }
+
+    this._clearDaysList(true);
+
+    removeElement(this._daysList);
+
+    this._pointModel.removeObserver(this._modelEventHandler);
+    this._filterModel.removeObserver(this._modelEventHandler);
+
+  }
+
+  getContainer() {
+    return this._pointsContainer;
   }
 
   _bindInnerHandlers() {
@@ -94,7 +112,7 @@ export default class TripPresenter {
 
       if (!isSameDate(lastDay, tripDay)) {
         dayCounter++;
-        this._dayItem = new DayItemView(tripDay, dayCounter, true);
+        this._dayItem = new DayItemView(tripDay, dayCounter);
         this._pointList = new PointListView();
 
         this._renderDayItem();
@@ -105,6 +123,7 @@ export default class TripPresenter {
       this._setPointComponent(trip);
 
     });
+
     renderLastPlaceElement(this._pointsContainer, this._daysList);
   }
 
@@ -135,6 +154,8 @@ export default class TripPresenter {
   _changeMode() {
     Object.values(this._pointPresenter)
       .forEach((presenter) => presenter.setDefaultMode());
+
+    this._newPointPresenter.destroy();
   }
 
   _sortClickHandler(type) {
@@ -168,6 +189,7 @@ export default class TripPresenter {
   }
 
   _renderEmptyMessage() {
+    this._pointEmptyMessage = new PointMessageView(EVENT_MESSAGES.EMPTY);
     renderLastPlaceElement(this._pointsContainer, this._pointEmptyMessage);
   }
 

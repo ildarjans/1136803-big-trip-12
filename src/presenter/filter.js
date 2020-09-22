@@ -1,8 +1,8 @@
-import MenuControlsView from '../view/menu/controls.js';
+import MenuFiltersView from '../view/menu/filters.js';
 import {
   removeElement,
   replaceDOMElement,
-  renderLastPlaceElement
+  renderLastPlaceElement,
 } from '../utils/render.js';
 import {UpdateType, FilterType} from '../consts.js';
 import {
@@ -21,6 +21,7 @@ export default class FilterPresenter {
 
     this._filterChangeHandler = this._filterChangeHandler.bind(this);
     this._modelEventHandler = this._modelEventHandler.bind(this);
+    this._tabClickHandler = this._tabClickHandler.bind(this);
 
     this._filterModel.addObserver(this._modelEventHandler);
     this._pointModel.addObserver(this._modelEventHandler);
@@ -29,7 +30,7 @@ export default class FilterPresenter {
   init() {
     this._activeFilter = this._filterModel.getFilter();
     const prevComponent = this._filterComponent;
-    this._filterComponent = new MenuControlsView(this._activeFilter);
+    this._filterComponent = new MenuFiltersView(this._activeFilter);
     this._filterComponent.setFilterChangeHandler(this._filterChangeHandler);
 
     if (!prevComponent) {
@@ -47,6 +48,10 @@ export default class FilterPresenter {
     }
 
     this._filterModel.setFilter(UpdateType.MAJOR, filterType);
+  }
+
+  _tabClickHandler(tabName) {
+    window.console.log(tabName);
   }
 
   _modelEventHandler() {
