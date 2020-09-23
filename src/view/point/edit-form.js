@@ -8,7 +8,6 @@ import {
   TRANSPORT_TYPES,
   ACTIVITY_TYPES,
   POINT_TYPE_PREFIXES,
-  CITIES,
   FLATPICKR,
   BLANK_EVENT,
 } from '../../consts.js';
@@ -16,10 +15,11 @@ import flatpickr from 'flatpickr';
 import '../../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 export default class PointFormView extends SmartView {
-  constructor(response = BLANK_EVENT, destination = true) {
+  constructor(point = BLANK_EVENT, offers, destinations) {
     super();
-    this._data = PointFormView.parseResponseToData(response);
-    this._destination = destination;
+    this._data = PointFormView.parsePointToData(point);
+    this._offers = offers;
+    this._destinations = destinations;
     this._datePicker = null;
 
     this._bindInnerHandlers();
@@ -36,7 +36,7 @@ export default class PointFormView extends SmartView {
   }
 
   reset(point) {
-    this.updateData(PointFormView.parseResponseToData(point));
+    this.updateData(PointFormView.parsePointToData(point));
   }
 
   _bindInnerHandlers() {
@@ -53,10 +53,10 @@ export default class PointFormView extends SmartView {
   _dateInputChangeHandler(selectedDate, dateStr, self) {
     switch (self.input.name) {
       case (`event-start-time`):
-        this.updateData(this._data.formData[`date_from`] = selectedDate[0], true);
+        this.updateData(this._data.formData.dateFrom = selectedDate[0], true);
         break;
       case (`event-end-time`):
-        this.updateData(this._data.formData[`date_to`] = selectedDate[0], true);
+        this.updateData(this._data.formData.dateTo = selectedDate[0], true);
         break;
     }
     this._validateDate();
@@ -83,18 +83,22 @@ export default class PointFormView extends SmartView {
   }
 
   _favoriteClickHandler(evt) {
-    this._data.formData[`is_favorite`] = evt.target.checked;
+    this._data.formData.isFavorite = evt.target.checked;
     this.updateData(this._data, true);
   }
 
   _getTemplate() {
-    return createEventEditFormTemplate(this._data, this._destination);
+    return createEventEditFormTemplate(
+        this._data.formData,
+        this._offers,
+        this._destinations.names
+    );
   }
 
   _eventTypeClickHandler(evt) {
     evt.preventDefault();
     if (evt.target.classList.contains(`event__type-input`)) {
-      this._data.formData.type = evt.target.value;
+      this._data.formData.type = (evt.target.value).toLowerCase();
       this._data.formData.offers = [];
       this.updateData(this._data);
     }
@@ -146,7 +150,7 @@ export default class PointFormView extends SmartView {
 
   _submitClickHandler(evt) {
     evt.preventDefault();
-    this._callbacks.submit(PointFormView.parseDataToRequest(this._data));
+    this._callbacks.submit(PointFormView.parseDataToPoint(this._data));
   }
 
   _restoreHandlers() {
@@ -154,7 +158,7 @@ export default class PointFormView extends SmartView {
   }
 
   _priceChangeHandler(evt) {
-    this._data.formData[`base_price`] = parseInt(evt.target.value, 10);
+    this._data.formData.basePrice = parseInt(evt.target.value, 10);
     this.updateData(this._data, true);
   }
 
@@ -191,26 +195,27 @@ export default class PointFormView extends SmartView {
   }
 
 
-  static parseResponseToData(response) {
+  static parsePointToData(point) {
     return Object.assign(
         {},
-        response,
+        point,
         {
           formData: {
-            [`base_price`]: response.point[`base_price`],
-            [`is_favorite`]: response.point[`is_favorite`],
-            [`date_from`]: response.point[`date_from`],
-            [`date_to`]: response.point[`date_to`],
-            type: response.point.type,
-            offers: response.point.offers.slice(),
-            destination: Object.assign({}, response.point.destination)
+            basePrice: point.basePrice,
+            isFavorite: point.isFavorite,
+            dateFrom: point.dateFrom,
+            dateTo: point.dateTo,
+            type: point.type,
+            offers: point.offers.slice(),
+            destination: Object.assign({}, point.destination)
           }
         }
     );
   }
-  static parseDataToRequest(data) {
+
+  static parseDataToPoint(data) {
     Object.assign(
-        data.point,
+        data,
         data.formData
     );
 
@@ -220,20 +225,16 @@ export default class PointFormView extends SmartView {
 }
 
 
-function createEventEditFormTemplate(trip, includeDestination = true) {
-  const {
-    formData,
-    offers,
-  } = trip;
+function createEventEditFormTemplate(formData, offers, destinationNames) {
 
-  const destination = includeDestination ? createEditFormDestinations(formData.destination) : ``;
-  const pickDateFrom = getFormDateString(formData.date_from);
-  const pickDateTo = getFormDateString(formData.date_to);
-  const offersByType = offers.filter((offer) => offer.type === formData.type)[0];
+  const destination = createEditFormDestinations(formData.destination);
+  const pickDateFrom = getFormDateString(formData.dateFrom);
+  const pickDateTo = getFormDateString(formData.dateTo);
+  const offersByType = offers.filter((offer) => offer.type === formData.type)[0].offers;
   const pickedOffers = formData.offers;
 
   return (
-    `<li class="trip-events__item">
+    `<li class="trip-events__item"> 
       <form class="trip-events__item  event  event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
@@ -272,7 +273,7 @@ function createEventEditFormTemplate(trip, includeDestination = true) {
             value="${formData.destination.name}" 
             list="destination-list-1">
           <datalist id="destination-list-1">
-            ${createCitiesListTemplate()}
+            ${createCitiesListTemplate(destinationNames)}
           </datalist>
         </div>
 
@@ -312,7 +313,7 @@ function createEventEditFormTemplate(trip, includeDestination = true) {
                 id="event-price-1"
                 type="number"
                 name="event-price"
-                value="${formData.base_price}"
+                value="${formData.basePrice}"
                 min="0"
           >
         </div>
@@ -325,7 +326,7 @@ function createEventEditFormTemplate(trip, includeDestination = true) {
               class="event__favorite-checkbox  visually-hidden"
               type="checkbox"
               name="event-favorite"
-              ${formData[`is_favorite`] ? `checked` : ``}>
+              ${formData.isFavorite ? `checked` : ``}>
         <label class="event__favorite-btn" for="event-favorite-1">
           <span class="visually-hidden">Add to favorite</span>
           <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -339,7 +340,7 @@ function createEventEditFormTemplate(trip, includeDestination = true) {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${createFormOffersTemplate(offersByType.offers, pickedOffers)}
+            ${createFormOffersTemplate(offersByType, pickedOffers)}
           </div>
         </section>
       </section>
@@ -393,8 +394,8 @@ function createFormOffersTemplate(offers, pickedOffers) {
   }).join(``);
 }
 
-function createCitiesListTemplate() {
-  return CITIES.map((city) => {
+function createCitiesListTemplate(destinationNames) {
+  return destinationNames.map((city) => {
     return `\
       <option value="${city}"></option>`;
   }).join(``);

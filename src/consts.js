@@ -53,19 +53,20 @@ export const UpdateType = {
   PATCH: `PATCH`,
   MINOR: `MINOR`,
   MAJOR: `MAJOR`,
+  INIT: `INIT`
 };
 
 export const POINT_TYPE_PREFIXES = {
-  'Taxi': `to`,
-  'Bus': `to`,
-  'Train': `to`,
-  'Ship': `to`,
-  'Transport': `to`,
-  'Drive': `to`,
-  'Flight': `to`,
-  'Check-in': `in`,
-  'Sightseeing': `in`,
-  'Restaurant': `in`,
+  'taxi': `to`,
+  'bus': `to`,
+  'train': `to`,
+  'ship': `to`,
+  'transport': `to`,
+  'drive': `to`,
+  'flight': `to`,
+  'check-in': `in`,
+  'sightseeing': `in`,
+  'restaurant': `in`,
 };
 
 export const TRANSPORT_TYPES = [
@@ -150,3 +151,23 @@ export const BLANK_EVENT = {
   offers: getOffers()
 };
 
+export const Method = {
+  GET: `GET`,
+  POST: `POST`,
+  PUT: `PUT`,
+  DELETE: `DELETE`
+};
+
+export const successHTTPStatusRange = {
+  MIN: 200,
+  MAX: 299
+};
+
+export const Url = {
+  SERVER: `https://12.ecmascript.pages.academy/big-trip/`,
+  OFFERS: `offers`,
+  POINTS: `points`,
+  DESTINATIONS: `destinations`
+};
+
+export const AUTORIZATION_KEY = `Basic dfcby1gegjr2ektntk3d4rjcvjvc`;

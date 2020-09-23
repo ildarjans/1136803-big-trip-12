@@ -1,19 +1,40 @@
-import {getTripsArray} from './mock/trip.js';
 import PointModel from './model/point.js';
 import FilterModel from './model/filter.js';
 import TripPresenter from './presenter/trip.js';
 import MenuPresenter from './presenter/menu.js';
+import Api from './api.js';
+import {
+  Url,
+  AUTORIZATION_KEY,
+  UpdateType
+} from './consts.js';
 
 const menuContainer = document.querySelector(`.page-header__container .trip-main`);
 const tripContainer = document.querySelector(`.page-body__page-main .trip-events`);
+const api = new Api(Url.SERVER, AUTORIZATION_KEY);
 const filterModel = new FilterModel();
 const pointModel = new PointModel();
-const tripPresenter = new TripPresenter(tripContainer, pointModel, filterModel);
+const tripPresenter = new TripPresenter(tripContainer, pointModel, filterModel, api);
 const menuPresenter = new MenuPresenter(menuContainer, tripPresenter, pointModel, filterModel);
-
-const trips = getTripsArray();
-
-pointModel.setPoints(trips);
 
 menuPresenter.init();
 tripPresenter.init();
+
+
+Promise.all([
+  api.getPoints(Url.POINTS),
+  api.getOffers(Url.OFFERS),
+  api.getDestinations(Url.DESTINATIONS)
+])
+  .then(([points, offers, destinations]) => {
+    pointModel.setOffers(offers);
+    pointModel.setDestinations(destinations);
+    pointModel.setPoints(UpdateType.INIT, points);
+    menuPresenter.activateMenu();
+    tripPresenter.setMenuPresenter(menuPresenter);
+  })
+  .catch(() => {
+    pointModel.setOffers([]);
+    pointModel.setDestinations([]);
+    pointModel.setPoints(UpdateType.INIT, []);
+  });

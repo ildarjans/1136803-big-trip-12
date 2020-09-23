@@ -23,3 +23,6 @@ export function getRandomArrayElement(arr) {
   return arr[getRandomInteger(arr.length - 1)];
 }
 
+export function capitalizeString(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}

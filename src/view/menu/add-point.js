@@ -23,6 +23,10 @@ export default class AddPointView extends AbstractView {
     .addEventListener(`click`, this._addPointHandler);
   }
 
+  removeAddPointClickHandler() {
+    this.getElement().removeEventListener(`click`, this._addPointHandler);
+  }
+
   _addPointHandler() {
     this._callbacks.addPoint();
   }

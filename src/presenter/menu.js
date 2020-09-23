@@ -35,12 +35,24 @@ export default class MenuPresenter {
   init() {
     this._renderMenu();
     this._filterPresenter.init();
-    this._setInnerHandlers();
+  }
+
+  _resetInnerHandlers() {
+    this._addEventButton.removeAddPointClickHandler();
+    this._menuTabs.removeControlTabsClickHandler();
   }
 
   _setInnerHandlers() {
     this._addEventButton.setAddPointClickHandler(this._addNewPointClickHandler);
     this._menuTabs.setControlTabsClickHandler(this._tabsClickHandler);
+  }
+
+  activateMenu() {
+    this._setInnerHandlers();
+  }
+
+  deactivateMenu() {
+    this._resetInnerHandlers();
   }
 
   _renderMenu() {
