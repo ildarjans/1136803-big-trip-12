@@ -23,6 +23,10 @@ export default class MenuTabsView extends AbstractView {
     this.getElement().addEventListener(`click`, this._controlTabsClickHandler);
   }
 
+  removeControlTabsClickHandler() {
+    this.getElement().removeEventListener(`click`, this._controlTabsClickHandler);
+  }
+
   toggleActiveTab(activeTabName) {
     this.getElement()
       .querySelectorAll(`.trip-tabs__btn`)

@@ -21,7 +21,6 @@ export default class FilterPresenter {
 
     this._filterChangeHandler = this._filterChangeHandler.bind(this);
     this._modelEventHandler = this._modelEventHandler.bind(this);
-    this._tabClickHandler = this._tabClickHandler.bind(this);
 
     this._filterModel.addObserver(this._modelEventHandler);
     this._pointModel.addObserver(this._modelEventHandler);
@@ -50,24 +49,20 @@ export default class FilterPresenter {
     this._filterModel.setFilter(UpdateType.MAJOR, filterType);
   }
 
-  _tabClickHandler(tabName) {
-    window.console.log(tabName);
-  }
-
   _modelEventHandler() {
     this.init();
   }
 
-  static getFilteredPoints(trips, type) {
+  static getFilteredPoints(points, type) {
     switch (type) {
       case FilterType.EVERYTHING:
-        return trips;
+        return points;
       case FilterType.PAST:
-        return trips.filter((trip) => isDayBefore(trip.point[`date_to`]));
+        return points.filter((point) => isDayBefore(point.dateTo));
       case FilterType.FUTURE:
-        return trips.filter((trip) => isDayAfter(trip.point[`date_from`]));
+        return points.filter((point) => isDayAfter(point.dateFrom));
       default:
-        return trips;
+        return points;
     }
   }
 }

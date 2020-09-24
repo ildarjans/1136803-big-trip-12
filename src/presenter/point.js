@@ -8,11 +8,12 @@ import {
 import {PointMode, UpdateType, UserAction} from '../consts.js';
 
 export default class PointPresenter {
-  constructor(pointsList, changeData, changeMode) {
+  constructor(pointsList, changeData, changeMode, offers, destinations) {
     this._pointsList = pointsList;
     this._changeData = changeData;
     this._changeMode = changeMode;
-    this._point = null;
+    this._offers = offers;
+    this._destinations = destinations;
     this._mode = PointMode.DEFAULT;
 
     this._pointItemComponent = null;
@@ -26,7 +27,7 @@ export default class PointPresenter {
     const prevFormComponent = this._pointFormComponent;
 
     this._pointItemComponent = new PointItemView(point);
-    this._pointFormComponent = new PointFormView(point);
+    this._pointFormComponent = new PointFormView(point, this._offers, this._destinations);
 
     this._bindInnerHandlers();
     this._setInnetHandlers();
@@ -65,6 +66,7 @@ export default class PointPresenter {
 
   _windowEscHandler(evt) {
     if (evt.key === `Escape`) {
+      evt.preventDefault();
       this._pointFormComponent.reset(this._point);
       this._switchToPointItem();
     }
@@ -76,6 +78,7 @@ export default class PointPresenter {
         UpdateType.MAJOR,
         point
     );
+    window.removeEventListener(`keydown`, this._windowEscHandler);
   }
 
   _switchToPointForm() {
@@ -92,10 +95,29 @@ export default class PointPresenter {
   }
 
   _submitClickHandler(point) {
-    this._changeData(
-        UserAction.UPDATE_POINT,
-        UpdateType.MINOR,
-        point
+    if (this._hasChange(point)) {
+      this._changeData(
+          UserAction.UPDATE_POINT,
+          UpdateType.MINOR,
+          point
+      );
+    } else {
+      this._switchToPointItem();
+    }
+  }
+
+  _hasChange(update) {
+    return (
+      this._point.dateFrom !== update.dateFrom ||
+      this._point.dateTo !== update.dateTo ||
+      this._point.type !== update.type ||
+      this._point.basePrice !== update.basePrice ||
+      this._point.destination.name !== update.destination.name ||
+      this._point.offers.length !== update.offers.length ||
+      (
+        this._point.length !== 0 &&
+        !this._point.offers.every((offer, index) => offer.title === update.offers[index].title)
+      )
     );
   }
 

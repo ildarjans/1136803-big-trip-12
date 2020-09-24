@@ -193,3 +193,7 @@ export function getEventDurationInMinutes(dateFrom, dateTo) {
 export function convertMsInHours(timeInMs) {
   return moment.duration(timeInMs).hours();
 }
+
+export function getDateISOString(date) {
+  return date instanceof Date ? date.toISOString() : ``;
+}

@@ -8,13 +8,13 @@ import {
 import {POINT_TYPE_PREFIXES, OFFER_ITEM_VIEW_LIMIT} from '../../consts.js';
 
 export default class PointItemView extends AbstractView {
-  constructor(trip) {
+  constructor(point) {
     super();
-    this._trip = trip;
+    this._point = point;
     this._dropDownClickHandler = this._dropDownClickHandler.bind(this);
   }
   _getTemplate() {
-    return createEventItemTemplate(this._trip);
+    return createEventItemTemplate(this._point);
   }
 
   _dropDownClickHandler(evt) {
@@ -31,14 +31,13 @@ export default class PointItemView extends AbstractView {
 
 }
 
-function createEventItemTemplate(trip) {
-  const point = trip.point;
+function createEventItemTemplate(point) {
 
-  const dateStartEvent = getCustomDateLocaleString(point.date_from);
-  const dateEndEvent = getCustomDateLocaleString(point.date_to);
-  const timeStartEvent = getCustomTimeString(point.date_from);
-  const timeEndEvent = getCustomTimeString(point.date_to);
-  const eventDuration = getEventDurationString(point.date_from, point.date_to);
+  const dateStartEvent = getCustomDateLocaleString(point.dateFrom);
+  const dateEndEvent = getCustomDateLocaleString(point.dateTo);
+  const timeStartEvent = getCustomTimeString(point.dateFrom);
+  const timeEndEvent = getCustomTimeString(point.dateTo);
+  const eventDuration = getEventDurationString(point.dateFrom, point.dateTo);
   const prefix = POINT_TYPE_PREFIXES[point.type];
 
   return (
@@ -58,7 +57,7 @@ function createEventItemTemplate(trip) {
         <p class="event__duration">${eventDuration}</p>
       </div>
       <p class="event__price">
-        &euro;&nbsp;<span class="event__price-value">${point.base_price}</span>
+        &euro;&nbsp;<span class="event__price-value">${point.basePrice}</span>
       </p>
 
       <h4 class="visually-hidden">Offers:</h4>

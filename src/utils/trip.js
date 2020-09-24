@@ -1,27 +1,27 @@
 export function sortEventsByPrice(a, b) {
-  const priceA = a.point[`base_price`];
-  const priceB = b.point[`base_price`];
+  const priceA = a.basePrice;
+  const priceB = b.basePrice;
 
   if (priceA === priceB) {
     return 0;
   }
 
-  return priceA > priceB ? 1 : -1;
+  return priceA > priceB ? -1 : 1;
 }
 
 export function sortEventsByTime(a, b) {
-  const tripDurationA = a.point[`date_to`] - a.point[`date_from`];
-  const tripDurationB = b.point[`date_to`] - b.point[`date_from`];
+  const eventDurationA = a.dateTo - a.dateFrom;
+  const eventDurationB = b.dateTo - b.dateFrom;
 
-  if (tripDurationA === tripDurationB) {
+  if (eventDurationA === eventDurationB) {
     return 0;
   }
 
-  return tripDurationA > tripDurationB ? 1 : -1;
+  return eventDurationA > eventDurationB ? -1 : 1;
 
 }
 
 export function sortTripsByDate(a, b) {
-  return a.point.date_from.getTime() - b.point.date_to.getTime();
+  return a.dateFrom.getTime() - b.dateTo.getTime();
 }
 

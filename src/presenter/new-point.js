@@ -1,5 +1,5 @@
 import PointFormView from '../view/point/edit-form.js';
-import {generateId} from '../mock/trip.js';
+import {generateId} from '../utils/common.js';
 import {FilterType, UserAction, UpdateType} from '../consts.js';
 import {
   removeElement,

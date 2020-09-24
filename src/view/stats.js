@@ -10,11 +10,10 @@ import {
 
 function renderMoneyChart(ctx, points) {
   const pointTypesDict = [...ACTIVITY_TYPES, ...TRANSPORT_TYPES]
-    .reduce((accum, type) => Object.assign(accum, {[type]: 0}), {});
+    .reduce((accum, type) => Object.assign(accum, {[type.toLowerCase()]: 0}), {});
 
   points.forEach((point) => {
-    const cost = point.point.base_price;
-    pointTypesDict[point.point.type] += cost;
+    pointTypesDict[point.type] += point.basePrice;
   });
 
   const pointTypes = [];
@@ -101,13 +100,13 @@ function renderMoneyChart(ctx, points) {
 
 function renderSpentTimeChart(ctx, points) {
   const pointTypesDict = [...ACTIVITY_TYPES, ...TRANSPORT_TYPES]
-    .reduce((accum, type) => Object.assign(accum, {[type]: 0}), {});
+    .reduce((accum, type) => Object.assign(accum, {[type.toLowerCase()]: 0}), {});
 
   points.forEach((point) => {
-    const dateFrom = point.point.date_from;
-    const dateTo = point.point.date_to;
+    const dateFrom = point.dateFrom;
+    const dateTo = point.dateTo;
     const duration = getEventDurationInMinutes(dateFrom, dateTo);
-    pointTypesDict[point.point.type] += duration;
+    pointTypesDict[point.type] += duration;
   });
 
   const pointTypes = [];
@@ -193,9 +192,10 @@ function renderSpentTimeChart(ctx, points) {
 }
 
 function renderTransportChart(ctx, points) {
-  const transportDict = TRANSPORT_TYPES.reduce((accum, type) => Object.assign(accum, {[type]: 0}), {});
+  const transportDict = TRANSPORT_TYPES
+    .reduce((accum, type) => Object.assign(accum, {[type.toLowerCase()]: 0}), {});
 
-  points.forEach((point) => transportDict[point.point.type] >= 0 ? ++transportDict[point.point.type] : ``);
+  points.forEach((point) => transportDict[point.type] >= 0 ? ++transportDict[point.type] : ``);
   const transportTypes = [];
   const transportCount = [];
   Object
