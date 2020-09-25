@@ -20,8 +20,8 @@ function getFiltersTemplate(currentType) {
   return (
     `<form class="trip-filters" action="#" method="get">
       ${filters.join(``)}
-    <button class="visually-hidden" type="submit">Accept filter</button>
-  </form>`
+      <button class="visually-hidden" type="submit">Accept filter</button>
+    </form>`
   );
 }
 

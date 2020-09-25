@@ -1,4 +1,5 @@
 import {createDOMElement} from '../utils/render.js';
+import {SHAKE_ANIMATION_TIMEOUT} from '../consts.js';
 
 export default class AbstractView {
   constructor() {
@@ -21,5 +22,13 @@ export default class AbstractView {
 
   resetElement() {
     this._element = null;
+  }
+
+  shake(callback) {
+    this.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    setTimeout(() => {
+      this.getElement().style.animation = ``;
+      callback();
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 }

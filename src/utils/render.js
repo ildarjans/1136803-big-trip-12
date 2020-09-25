@@ -19,6 +19,12 @@ export function renderLastPlaceElement(container, element) {
   container.append(element);
 }
 
+export function renderBeforeDirectElement(directElement, element) {
+  directElement = getAbstractClassDOMElement(directElement);
+  element = getAbstractClassDOMElement(element);
+  directElement.insertAdjacentElement(`beforebegin`, element);
+}
+
 export function renderFirstPlaceElement(container, element) {
   container = getAbstractClassDOMElement(container);
   element = getAbstractClassDOMElement(element);
