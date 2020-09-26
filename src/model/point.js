@@ -70,6 +70,7 @@ export default class PointModel extends Observer {
 
   }
 
+
   static adaptDestinationsToClient(destinations) {
     return {
       names: destinations.map((destination) => destination.name),

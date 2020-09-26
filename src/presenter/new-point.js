@@ -1,15 +1,22 @@
+
 import PointFormView from '../view/point/edit-form.js';
-import {generateId} from '../utils/common.js';
-import {FilterType, UserAction, UpdateType} from '../consts.js';
+import {
+  FormType,
+  FilterType,
+  UserAction,
+  UpdateType,
+  BLANK_EVENT
+} from '../consts.js';
 import {
   removeElement,
-  renderFirstPlaceElement,
+  renderBeforeDirectElement
 } from '../utils/render.js';
 
 export default class NewPointPresenter {
-  constructor(container, filterModel, changeData, changeMode) {
-    this._container = container;
+  constructor(directElement, pointModel, filterModel, changeData, changeMode) {
+    this._directElement = directElement;
     this._filterModel = filterModel;
+    this._pointModel = pointModel;
     this._changeData = changeData;
     this._changeMode = changeMode;
 
@@ -28,11 +35,18 @@ export default class NewPointPresenter {
     this._changeMode();
     this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
 
-    this._pointFormComponent = new PointFormView();
+    this._pointFormComponent = new PointFormView(
+        BLANK_EVENT,
+        this._pointModel.getOffers(),
+        this._pointModel.getDestinations(),
+        FormType.NEW
+    );
     this._pointFormComponent.setSubmitClickHandler(this._submitClickHandler);
-    this._pointFormComponent.setDeleteClickHandler(this._deleteClickHandler);
+    this._pointFormComponent.setDeleteClickHandler(this._cancelClickHandler);
 
-    renderFirstPlaceElement(this._container, this._pointFormComponent);
+    renderBeforeDirectElement(this._directElement, this._pointFormComponent);
+
+    this._pointFormComponent.validateForm();
 
     document.addEventListener(`keydown`, this._escKeyDownHandler);
   }
@@ -53,13 +67,27 @@ export default class NewPointPresenter {
 
   }
 
-  _bindInnerHandlers() {
-    this._submitClickHandler = this._submitClickHandler.bind(this);
-    this._deleteClickHandler = this._deleteClickHandler.bind(this);
-    this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+  setAborting() {
+    this._pointFormComponent.shake(this._resetFormViewState);
   }
 
-  _deleteClickHandler() {
+  setSavingState() {
+    this._pointFormComponent.updateData({
+      state: {
+        isSaving: true,
+        isDisabled: true,
+      }
+    });
+  }
+
+  _bindInnerHandlers() {
+    this._submitClickHandler = this._submitClickHandler.bind(this);
+    this._cancelClickHandler = this._cancelClickHandler.bind(this);
+    this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+    this._resetFormViewState = this._resetFormViewState.bind(this);
+  }
+
+  _cancelClickHandler() {
     this.destroy();
   }
 
@@ -70,15 +98,22 @@ export default class NewPointPresenter {
     }
   }
 
-  _submitClickHandler(data) {
-    data.point.id = generateId();
+  _resetFormViewState() {
+    this._pointFormComponent.updateData({
+      state: {
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      }
+    });
+  }
+
+  _submitClickHandler(point) {
     this._changeData(
         UserAction.ADD_POINT,
         UpdateType.MAJOR,
-        data
+        point
     );
-
-    this.destroy();
   }
 
 }
