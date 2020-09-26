@@ -15,223 +15,6 @@ import {
 import flatpickr from 'flatpickr';
 import '../../../node_modules/flatpickr/dist/flatpickr.min.css';
 
-export default class PointFormView extends SmartView {
-  constructor(point, offers, destinations, formType = FormType.EDIT) {
-    super();
-    this._data = PointFormView.parsePointToData(point);
-    this._offers = offers;
-    this._destinations = destinations;
-    this._formType = formType;
-    this._datePicker = null;
-
-    this._bindInnerHandlers();
-    this._setInnerHandlers();
-
-  }
-
-  reset(point) {
-    this.updateData(PointFormView.parsePointToData(point));
-  }
-
-  setDeleteClickHandler(cb) {
-    this._callbacks.delete = cb;
-  }
-
-  setSubmitClickHandler(cb) {
-    this._callbacks.submit = cb;
-  }
-
-  validateForm() {
-    const destinationInput = this.getElement()
-      .querySelector(`.event__input--destination`);
-    this._validateDestination(destinationInput);
-  }
-
-  _bindInnerHandlers() {
-    this._submitClickHandler = this._submitClickHandler.bind(this);
-    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
-    this._eventTypeClickHandler = this._eventTypeClickHandler.bind(this);
-    this._dateInputChangeHandler = this._dateInputChangeHandler.bind(this);
-    this._deleteClickHandler = this._deleteClickHandler.bind(this);
-    this._offersChangeHandler = this._offersChangeHandler.bind(this);
-    this._priceChangeHandler = this._priceChangeHandler.bind(this);
-    this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
-    this.validateForm = this.validateForm.bind(this);
-  }
-
-  _dateInputChangeHandler(selectedDate, dateStr, self) {
-    switch (self.input.name) {
-      case (`event-start-time`):
-        this.updateData(this._data.formData.dateFrom = selectedDate[0]);
-        break;
-      case (`event-end-time`):
-        this.updateData(this._data.formData.dateTo = selectedDate[0]);
-        break;
-    }
-  }
-
-  _deleteClickHandler(evt) {
-    evt.preventDefault();
-    this._callbacks.delete(this._data);
-  }
-
-  _destinationChangeHandler(evt) {
-    this._validateDestination(evt.target);
-  }
-
-  _favoriteClickHandler(evt) {
-    this._data.formData.isFavorite = evt.target.checked;
-    this.updateData(this._data, true);
-  }
-
-  _eventTypeClickHandler(evt) {
-    evt.preventDefault();
-    if (evt.target.classList.contains(`event__type-input`)) {
-      this._data.formData.type = (evt.target.value).toLowerCase();
-      this._data.formData.offers = [];
-      this.updateData(this._data);
-    }
-    this.validateForm();
-  }
-
-  _getTemplate() {
-    return createEventEditFormTemplate(
-        this._data,
-        this._offers,
-        this._destinations.names,
-        this._formType
-    );
-  }
-
-  _offersChangeHandler(evt) {
-    const isPicked = evt.target.checked;
-    const title = evt.target.name;
-    const price = evt.target.value ? parseInt(evt.target.value, 10) : 0;
-    const offers = this._data.formData.offers;
-
-    if (isPicked) {
-      offers.push({title, price});
-    } else {
-      const index = offers.findIndex((offer) => offer.title === title);
-      if (index >= 0) {
-        offers.splice(index, 1);
-      }
-    }
-    this.updateData(this._data, true);
-  }
-
-  _priceChangeHandler(evt) {
-    this._data.formData.basePrice = parseInt(evt.target.value, 10);
-    this.updateData(this._data, true);
-  }
-
-  _restoreHandlers() {
-    this._setInnerHandlers();
-  }
-
-  _setInnerHandlers() {
-    const self = this.getElement();
-    this._setDatePicker();
-
-    if (this._formType === FormType.EDIT) {
-      self
-      .querySelector(`.event__favorite-checkbox`)
-      .addEventListener(`click`, this._favoriteClickHandler);
-    }
-
-    self
-      .querySelector(`.event__type-list`)
-      .addEventListener(`change`, this._eventTypeClickHandler);
-    self
-      .querySelector(`.event__input--price`)
-      .addEventListener(`change`, this._priceChangeHandler);
-    self
-      .querySelector(`.event__section--offers`)
-      .addEventListener(`change`, this._offersChangeHandler);
-    self
-      .addEventListener(`submit`, this._submitClickHandler);
-    self
-      .querySelector(`.event__reset-btn`)
-      .addEventListener(`click`, this._deleteClickHandler);
-    self
-      .querySelector(`.event__input--destination`)
-      .addEventListener(`change`, this._destinationChangeHandler);
-  }
-
-  _setDatePicker() {
-    if (this._datePicker) {
-      this._datePicker.forEach((dp) => dp.destroy());
-      this._datePicker = null;
-    }
-
-    this._datePicker = flatpickr(
-        this.getElement().querySelectorAll(`.event__input--time`),
-        {
-          enableTime: true,
-          [`time_24hr`]: true,
-          dateFormat: FORM_FLATPICKR_DATE_FORMAT,
-          onChange: this._dateInputChangeHandler
-        }
-    );
-  }
-
-  _submitClickHandler(evt) {
-    evt.preventDefault();
-    this._callbacks.submit(PointFormView.parseDataToPoint(this._data));
-  }
-
-  _validateDestination(inputField) {
-    const isValidCity = this._destinations.names
-        .some((name) => name === inputField.value);
-
-    if (isValidCity) {
-      const selectedDesctination = this._destinations.all
-        .filter((dest) => dest.name === inputField.value);
-      this._data.formData.destination = selectedDesctination[0];
-      this.updateData(this._data);
-      inputField.setCustomValidity(``);
-    } else {
-      inputField.setCustomValidity(`Select one of cities from dropdown list`);
-    }
-  }
-
-  static parsePointToData(point) {
-    return Object.assign(
-        {},
-        point,
-        {
-          formData: {
-            basePrice: point.basePrice,
-            isFavorite: point.isFavorite,
-            dateFrom: point.dateFrom,
-            dateTo: point.dateTo,
-            type: point.type,
-            offers: point.offers.slice(),
-            destination: Object.assign({}, point.destination)
-          },
-          state: {
-            isDisabled: false,
-            isSaving: false,
-            isDeleting: false,
-          }
-        }
-    );
-  }
-
-  static parseDataToPoint(data) {
-    const point = Object.assign(
-        {},
-        data,
-        data.formData
-    );
-
-    delete point.state;
-    delete point.formData;
-    return point;
-  }
-}
-
-
 function createEventEditFormTemplate(data, offers, destinationNames, formType) {
   const {formData, state} = data;
   const {isDisabled, isSaving, isDeleting} = state;
@@ -508,4 +291,221 @@ function createPicturesTemplate(pictures) {
       </img>`
     );
   }).join(``);
+}
+
+
+export default class PointFormView extends SmartView {
+  constructor(point, offers, destinations, formType = FormType.EDIT) {
+    super();
+    this._data = PointFormView.parsePointToData(point);
+    this._offers = offers;
+    this._destinations = destinations;
+    this._formType = formType;
+    this._datePicker = null;
+
+    this._bindInnerHandlers();
+    this._setInnerHandlers();
+
+  }
+
+  reset(point) {
+    this.updateData(PointFormView.parsePointToData(point));
+  }
+
+  setDeleteClickHandler(cb) {
+    this._callbacks.delete = cb;
+  }
+
+  setSubmitClickHandler(cb) {
+    this._callbacks.submit = cb;
+  }
+
+  validateForm() {
+    const destinationInput = this.getElement()
+      .querySelector(`.event__input--destination`);
+    this._validateDestination(destinationInput);
+  }
+
+  _bindInnerHandlers() {
+    this._submitClickHandler = this._submitClickHandler.bind(this);
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this._eventTypeClickHandler = this._eventTypeClickHandler.bind(this);
+    this._dateInputChangeHandler = this._dateInputChangeHandler.bind(this);
+    this._deleteClickHandler = this._deleteClickHandler.bind(this);
+    this._offersChangeHandler = this._offersChangeHandler.bind(this);
+    this._priceChangeHandler = this._priceChangeHandler.bind(this);
+    this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
+    this.validateForm = this.validateForm.bind(this);
+  }
+
+  _dateInputChangeHandler(selectedDate, dateStr, self) {
+    switch (self.input.name) {
+      case (`event-start-time`):
+        this.updateData(this._data.formData.dateFrom = selectedDate[0]);
+        break;
+      case (`event-end-time`):
+        this.updateData(this._data.formData.dateTo = selectedDate[0]);
+        break;
+    }
+  }
+
+  _deleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callbacks.delete(this._data);
+  }
+
+  _destinationChangeHandler(evt) {
+    this._validateDestination(evt.target);
+  }
+
+  _favoriteClickHandler(evt) {
+    this._data.formData.isFavorite = evt.target.checked;
+    this.updateData(this._data, true);
+  }
+
+  _eventTypeClickHandler(evt) {
+    evt.preventDefault();
+    if (evt.target.classList.contains(`event__type-input`)) {
+      this._data.formData.type = (evt.target.value).toLowerCase();
+      this._data.formData.offers = [];
+      this.updateData(this._data);
+    }
+    this.validateForm();
+  }
+
+  _getTemplate() {
+    return createEventEditFormTemplate(
+        this._data,
+        this._offers,
+        this._destinations.names,
+        this._formType
+    );
+  }
+
+  _offersChangeHandler(evt) {
+    const isPicked = evt.target.checked;
+    const title = evt.target.name;
+    const price = evt.target.value ? parseInt(evt.target.value, 10) : 0;
+    const offers = this._data.formData.offers;
+
+    if (isPicked) {
+      offers.push({title, price});
+    } else {
+      const index = offers.findIndex((offer) => offer.title === title);
+      if (index >= 0) {
+        offers.splice(index, 1);
+      }
+    }
+    this.updateData(this._data, true);
+  }
+
+  _priceChangeHandler(evt) {
+    this._data.formData.basePrice = parseInt(evt.target.value, 10);
+    this.updateData(this._data, true);
+  }
+
+  _restoreHandlers() {
+    this._setInnerHandlers();
+  }
+
+  _setInnerHandlers() {
+    const self = this.getElement();
+    this._setDatePicker();
+
+    if (this._formType === FormType.EDIT) {
+      self
+      .querySelector(`.event__favorite-checkbox`)
+      .addEventListener(`click`, this._favoriteClickHandler);
+    }
+
+    self
+      .querySelector(`.event__type-list`)
+      .addEventListener(`change`, this._eventTypeClickHandler);
+    self
+      .querySelector(`.event__input--price`)
+      .addEventListener(`change`, this._priceChangeHandler);
+    self
+      .querySelector(`.event__section--offers`)
+      .addEventListener(`change`, this._offersChangeHandler);
+    self
+      .addEventListener(`submit`, this._submitClickHandler);
+    self
+      .querySelector(`.event__reset-btn`)
+      .addEventListener(`click`, this._deleteClickHandler);
+    self
+      .querySelector(`.event__input--destination`)
+      .addEventListener(`change`, this._destinationChangeHandler);
+  }
+
+  _setDatePicker() {
+    if (this._datePicker) {
+      this._datePicker.forEach((dp) => dp.destroy());
+      this._datePicker = null;
+    }
+
+    this._datePicker = flatpickr(
+        this.getElement().querySelectorAll(`.event__input--time`),
+        {
+          enableTime: true,
+          [`time_24hr`]: true,
+          dateFormat: FORM_FLATPICKR_DATE_FORMAT,
+          onChange: this._dateInputChangeHandler
+        }
+    );
+  }
+
+  _submitClickHandler(evt) {
+    evt.preventDefault();
+    this._callbacks.submit(PointFormView.parseDataToPoint(this._data));
+  }
+
+  _validateDestination(inputField) {
+    const isValidCity = this._destinations.names
+        .some((name) => name === inputField.value);
+
+    if (isValidCity) {
+      const selectedDesctination = this._destinations.all
+        .filter((dest) => dest.name === inputField.value);
+      this._data.formData.destination = selectedDesctination[0];
+      this.updateData(this._data);
+      inputField.setCustomValidity(``);
+    } else {
+      inputField.setCustomValidity(`Select one of cities from dropdown list`);
+    }
+  }
+
+  static parsePointToData(point) {
+    return Object.assign(
+        {},
+        point,
+        {
+          formData: {
+            basePrice: point.basePrice,
+            isFavorite: point.isFavorite,
+            dateFrom: point.dateFrom,
+            dateTo: point.dateTo,
+            type: point.type,
+            offers: point.offers.slice(),
+            destination: Object.assign({}, point.destination)
+          },
+          state: {
+            isDisabled: false,
+            isSaving: false,
+            isDeleting: false,
+          }
+        }
+    );
+  }
+
+  static parseDataToPoint(data) {
+    const point = Object.assign(
+        {},
+        data,
+        data.formData
+    );
+
+    delete point.state;
+    delete point.formData;
+    return point;
+  }
 }

@@ -150,11 +150,6 @@ export function getFormDateString(date) {
   return date instanceof Date ? moment(date).format(FORM_MOMENT_DATE_FORMAT) : ``;
 }
 
-export function parseFormDateString(dateStr) {
-  return moment(dateStr, FORM_MOMENT_DATE_FORMAT).toDate();
-}
-
-
 export function getEventDurationString(dateFrom, dateTo) {
   const from = moment(dateFrom);
   const to = moment(dateTo);
@@ -174,10 +169,6 @@ export function isDayBefore(date, now = new Date()) {
 
 export function isDayAfter(date, now = new Date()) {
   return moment(date).isAfter(now, `day`);
-}
-
-export function isToday(date, now = new Date()) {
-  return moment(date).isSame(now, `day`);
 }
 
 export function isDateBefore(earlyDate, nextDate) {

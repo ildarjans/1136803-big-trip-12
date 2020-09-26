@@ -8,6 +8,55 @@ import {
 } from '../utils/date.js';
 
 
+export default class StatsView extends AbstractView {
+  constructor(points) {
+    super();
+    this._points = points;
+
+    this._moneyChart = null;
+    this._transportChart = null;
+
+    this._setCharts();
+  }
+
+  _getTemplate() {
+    return (
+      `<section class="statistics">
+      <h2 class="visually-hidden">Trip statistics</h2>
+
+      <div class="statistics__item statistics__item--money">
+        <canvas class="statistics__chart  statistics__chart--money" width="900"></canvas>
+      </div>
+
+      <div class="statistics__item statistics__item--transport">
+        <canvas class="statistics__chart  statistics__chart--transport" width="900"></canvas>
+      </div>
+
+      <div class="statistics__item statistics__item--time-spend">
+        <canvas class="statistics__chart  statistics__chart--time" width="900"></canvas>
+      </div>
+    </section>`
+    );
+  }
+
+  _setCharts() {
+    if (this._transportChart || this._moneyChart || this._timeSpendChart) {
+      this._transportChart = null;
+      this._moneyChart = null;
+      this._timeSpendChart = null;
+    }
+
+    const transportCtx = this.getElement().querySelector(`.statistics__chart--transport`).getContext(`2d`);
+    const moneyCtx = this.getElement().querySelector(`.statistics__chart--money`).getContext(`2d`);
+    const timeCtx = this.getElement().querySelector(`.statistics__chart--time`).getContext(`2d`);
+
+    this._transportChart = renderTransportChart(transportCtx, this._points);
+    this._moneyChart = renderMoneyChart(moneyCtx, this._points);
+    this._timeSpendChart = renderSpentTimeChart(timeCtx, this._points);
+  }
+}
+
+
 function renderMoneyChart(ctx, points) {
   const pointTypesDict = [...ACTIVITY_TYPES, ...TRANSPORT_TYPES]
     .reduce((accum, type) => Object.assign(accum, {[type.toLowerCase()]: 0}), {});
@@ -277,52 +326,4 @@ function renderTransportChart(ctx, points) {
       },
     },
   });
-}
-
-export default class StatsView extends AbstractView {
-  constructor(points) {
-    super();
-    this._points = points;
-
-    this._moneyChart = null;
-    this._transportChart = null;
-
-    this._setCharts();
-  }
-
-  _getTemplate() {
-    return (
-      `<section class="statistics">
-      <h2 class="visually-hidden">Trip statistics</h2>
-
-      <div class="statistics__item statistics__item--money">
-        <canvas class="statistics__chart  statistics__chart--money" width="900"></canvas>
-      </div>
-
-      <div class="statistics__item statistics__item--transport">
-        <canvas class="statistics__chart  statistics__chart--transport" width="900"></canvas>
-      </div>
-
-      <div class="statistics__item statistics__item--time-spend">
-        <canvas class="statistics__chart  statistics__chart--time" width="900"></canvas>
-      </div>
-    </section>`
-    );
-  }
-
-  _setCharts() {
-    if (this._transportChart || this._moneyChart || this._timeSpendChart) {
-      this._transportChart = null;
-      this._moneyChart = null;
-      this._timeSpendChart = null;
-    }
-
-    const transportCtx = this.getElement().querySelector(`.statistics__chart--transport`).getContext(`2d`);
-    const moneyCtx = this.getElement().querySelector(`.statistics__chart--money`).getContext(`2d`);
-    const timeCtx = this.getElement().querySelector(`.statistics__chart--time`).getContext(`2d`);
-
-    this._transportChart = renderTransportChart(transportCtx, this._points);
-    this._moneyChart = renderMoneyChart(moneyCtx, this._points);
-    this._timeSpendChart = renderSpentTimeChart(timeCtx, this._points);
-  }
 }

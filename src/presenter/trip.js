@@ -204,7 +204,7 @@ export default class TripPresenter {
     const offers = this._pointModel.getOffers();
     const destinations = this._pointModel.getDestinations();
 
-    if (!points) {
+    if (points === null || points.length === 0) {
       this._renderEmptyMessage();
       return;
     }
@@ -239,7 +239,9 @@ export default class TripPresenter {
   }
 
   _renderSort() {
-    this._pointSortComponent = null;
+    if (this._pointSortComponent) {
+      removeElement(this._pointSortComponent);
+    }
     this._pointSortComponent = new PointSortView(this._currentSortType);
     this._pointSortComponent.setSortClickHandler(this._sortClickHandler);
     renderLastPlaceElement(this._pointsContainer, this._pointSortComponent);

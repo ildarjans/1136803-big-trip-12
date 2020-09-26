@@ -9,30 +9,6 @@ import {capitalizeString as capitalize} from '../../utils/common.js';
 
 import {POINT_TYPE_PREFIXES, OFFER_ITEM_VIEW_LIMIT} from '../../consts.js';
 
-export default class PointEventView extends AbstractView {
-  constructor(point) {
-    super();
-    this._point = point;
-    this._dropDownClickHandler = this._dropDownClickHandler.bind(this);
-  }
-  _getTemplate() {
-    return createEventItemTemplate(this._point);
-  }
-
-  _dropDownClickHandler(evt) {
-    evt.preventDefault();
-    this._callbacks.click();
-  }
-
-  setDropdownClickHandler(cb) {
-    this._callbacks.click = cb;
-    this.getElement()
-      .querySelector(`.event__rollup-btn`)
-      .addEventListener(`click`, this._dropDownClickHandler);
-  }
-
-}
-
 function createEventItemTemplate(point) {
 
   const dateStartEvent = getCustomDateLocaleString(point.dateFrom);
@@ -85,4 +61,28 @@ function createEventOffersTemplate(offers) {
       </>`;
     })
     .join(``);
+}
+
+export default class PointEventView extends AbstractView {
+  constructor(point) {
+    super();
+    this._point = point;
+    this._dropDownClickHandler = this._dropDownClickHandler.bind(this);
+  }
+  _getTemplate() {
+    return createEventItemTemplate(this._point);
+  }
+
+  _dropDownClickHandler(evt) {
+    evt.preventDefault();
+    this._callbacks.click();
+  }
+
+  setDropdownClickHandler(cb) {
+    this._callbacks.click = cb;
+    this.getElement()
+      .querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, this._dropDownClickHandler);
+  }
+
 }

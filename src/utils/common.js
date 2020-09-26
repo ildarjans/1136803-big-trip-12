@@ -6,14 +6,14 @@ export function getRandomArrayElements(arr, count) {
   if (arr.length < count) {
     return undefined;
   }
-  const resultArray = [];
-  while (resultArray.length < count) {
+  const results = [];
+  while (results.length < count) {
     const randElement = arr[getRandomInteger(arr.length - 1)];
-    if (!resultArray.includes(randElement)) {
-      resultArray.push(randElement);
+    if (!results.includes(randElement)) {
+      results.push(randElement);
     }
   }
-  return resultArray;
+  return results;
 }
 
 export function getRandomArrayElement(arr) {
