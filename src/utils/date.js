@@ -1,5 +1,5 @@
 import moment from 'moment';
-import {MOMENT} from '../consts.js';
+import {FORM_MOMENT_DATE_FORMAT} from '../consts.js';
 
 function getCustomDateObject(dateObj, ...literals) {
   /**
@@ -147,11 +147,11 @@ export function getCustomTimeString(dateObj) {
 }
 
 export function getFormDateString(date) {
-  return date instanceof Date ? moment(date).format(MOMENT.FORM_DATE_FORMAT) : ``;
+  return date instanceof Date ? moment(date).format(FORM_MOMENT_DATE_FORMAT) : ``;
 }
 
 export function parseFormDateString(dateStr) {
-  return moment(dateStr, MOMENT.FORM_DATE_FORMAT).toDate();
+  return moment(dateStr, FORM_MOMENT_DATE_FORMAT).toDate();
 }
 
 
@@ -180,8 +180,8 @@ export function isToday(date, now = new Date()) {
   return moment(date).isSame(now, `day`);
 }
 
-export function isDateBefore(date, dateBefore) {
-  return moment(date).isBefore(dateBefore);
+export function isDateBefore(earlyDate, nextDate) {
+  return moment(earlyDate).isBefore(nextDate);
 }
 
 export function getEventDurationInMinutes(dateFrom, dateTo) {

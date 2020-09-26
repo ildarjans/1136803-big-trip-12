@@ -23,8 +23,7 @@ export function getRandomArrayElement(arr) {
   return arr[getRandomInteger(arr.length - 1)];
 }
 
-export function generateId() {
-  const a = getRandomInteger(Date.now()).toString(16);
-  const b = getRandomInteger(Date.now()).toString(16);
-  return `${a}${b}`;
+export function capitalizeString(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
+

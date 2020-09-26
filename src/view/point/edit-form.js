@@ -1,30 +1,36 @@
 import {
   getFormDateString,
-  parseFormDateString,
   isDateBefore,
 } from '../../utils/date.js';
+import {capitalizeString as capitalize} from '../../utils/common.js';
 import SmartView from '../smart.js';
 import {
   TRANSPORT_TYPES,
   ACTIVITY_TYPES,
   POINT_TYPE_PREFIXES,
-  FLATPICKR,
-  BLANK_EVENT,
+  FORM_FLATPICKR_DATE_FORMAT,
+  FormType,
 } from '../../consts.js';
+
 import flatpickr from 'flatpickr';
 import '../../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 export default class PointFormView extends SmartView {
-  constructor(point = BLANK_EVENT, offers, destinations) {
+  constructor(point, offers, destinations, formType = FormType.EDIT) {
     super();
     this._data = PointFormView.parsePointToData(point);
     this._offers = offers;
     this._destinations = destinations;
+    this._formType = formType;
     this._datePicker = null;
 
     this._bindInnerHandlers();
     this._setInnerHandlers();
 
+  }
+
+  reset(point) {
+    this.updateData(PointFormView.parsePointToData(point));
   }
 
   setDeleteClickHandler(cb) {
@@ -35,8 +41,10 @@ export default class PointFormView extends SmartView {
     this._callbacks.submit = cb;
   }
 
-  reset(point) {
-    this.updateData(PointFormView.parsePointToData(point));
+  validateForm() {
+    const destinationInput = this.getElement()
+      .querySelector(`.event__input--destination`);
+    this._validateDestination(destinationInput);
   }
 
   _bindInnerHandlers() {
@@ -47,33 +55,18 @@ export default class PointFormView extends SmartView {
     this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._offersChangeHandler = this._offersChangeHandler.bind(this);
     this._priceChangeHandler = this._priceChangeHandler.bind(this);
-    this._cityChangeHandler = this._cityChangeHandler.bind(this);
+    this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
+    this.validateForm = this.validateForm.bind(this);
   }
 
   _dateInputChangeHandler(selectedDate, dateStr, self) {
     switch (self.input.name) {
       case (`event-start-time`):
-        this.updateData(this._data.formData.dateFrom = selectedDate[0], true);
+        this.updateData(this._data.formData.dateFrom = selectedDate[0]);
         break;
       case (`event-end-time`):
-        this.updateData(this._data.formData.dateTo = selectedDate[0], true);
+        this.updateData(this._data.formData.dateTo = selectedDate[0]);
         break;
-    }
-    this._validateDate();
-  }
-
-  _validateDate() {
-    const eventStart = this.getElement().querySelector(`[name="event-start-time"]`);
-    const eventEnd = this.getElement().querySelector(`[name="event-end-time"]`);
-    const submitBtn = this.getElement().querySelector(`.event__save-btn`);
-    const dateFrom = parseFormDateString(eventStart.value);
-    const dateTo = parseFormDateString(eventEnd.value);
-    if (isDateBefore(dateFrom, dateTo)) {
-      eventEnd.style.color = `unset`;
-      submitBtn.disabled = false;
-    } else {
-      eventEnd.classList.add(`event__input--invalid`);
-      submitBtn.disabled = true;
     }
   }
 
@@ -82,17 +75,13 @@ export default class PointFormView extends SmartView {
     this._callbacks.delete(this._data);
   }
 
+  _destinationChangeHandler(evt) {
+    this._validateDestination(evt.target);
+  }
+
   _favoriteClickHandler(evt) {
     this._data.formData.isFavorite = evt.target.checked;
     this.updateData(this._data, true);
-  }
-
-  _getTemplate() {
-    return createEventEditFormTemplate(
-        this._data.formData,
-        this._offers,
-        this._destinations.names
-    );
   }
 
   _eventTypeClickHandler(evt) {
@@ -102,85 +91,22 @@ export default class PointFormView extends SmartView {
       this._data.formData.offers = [];
       this.updateData(this._data);
     }
+    this.validateForm();
   }
 
-  _setInnerHandlers() {
-    const self = this.getElement();
-    this._setDatePicker();
-
-    self
-      .querySelector(`.event__type-list`)
-      .addEventListener(`change`, this._eventTypeClickHandler);
-    self
-      .querySelector(`.event__favorite-checkbox`)
-      .addEventListener(`click`, this._favoriteClickHandler);
-    self
-      .querySelector(`.event__input--price`)
-      .addEventListener(`change`, this._priceChangeHandler);
-    self
-      .querySelector(`.event__section--offers`)
-      .addEventListener(`change`, this._offersChangeHandler);
-    self
-      .querySelector(`.trip-events__item.event--edit`)
-      .addEventListener(`submit`, this._submitClickHandler);
-    self
-      .querySelector(`.event__reset-btn`)
-      .addEventListener(`click`, this._deleteClickHandler);
-    self
-      .querySelector(`.event__input--destination`)
-      .addEventListener(`change`, this._cityChangeHandler);
-  }
-
-  _setDatePicker() {
-    if (this._datePicker) {
-      this._datePicker.forEach((dp) => dp.destroy());
-      this._datePicker = null;
-    }
-
-    this._datePicker = flatpickr(
-        this.getElement().querySelectorAll(`.event__input--time`),
-        {
-          enableTime: true,
-          [`time_24hr`]: true,
-          dateFormat: FLATPICKR.FORM_DATE_FORMAT,
-          onChange: this._dateInputChangeHandler
-        }
+  _getTemplate() {
+    return createEventEditFormTemplate(
+        this._data,
+        this._offers,
+        this._destinations.names,
+        this._formType
     );
-  }
-
-  _submitClickHandler(evt) {
-    evt.preventDefault();
-    this._callbacks.submit(PointFormView.parseDataToPoint(this._data));
-  }
-
-  _restoreHandlers() {
-    this._setInnerHandlers();
-  }
-
-  _priceChangeHandler(evt) {
-    this._data.formData.basePrice = parseInt(evt.target.value, 10);
-    this.updateData(this._data, true);
-  }
-
-  _cityChangeHandler(evt) {
-    const isValidCity = Array.from(
-        this.getElement()
-        .querySelector(`#destination-list-1`).options
-    )
-      .some((option) => option.value === evt.target.value);
-    if (isValidCity) {
-      evt.target.setCustomValidity(``);
-      this._data.formData.destination.name = evt.target.value;
-      this.updateData(this._data, true);
-    } else {
-      evt.target.setCustomValidity(`Select one of cities from dropdown list`);
-    }
   }
 
   _offersChangeHandler(evt) {
     const isPicked = evt.target.checked;
     const title = evt.target.name;
-    const price = evt.target.value;
+    const price = evt.target.value ? parseInt(evt.target.value, 10) : 0;
     const offers = this._data.formData.offers;
 
     if (isPicked) {
@@ -194,6 +120,80 @@ export default class PointFormView extends SmartView {
     this.updateData(this._data, true);
   }
 
+  _priceChangeHandler(evt) {
+    this._data.formData.basePrice = parseInt(evt.target.value, 10);
+    this.updateData(this._data, true);
+  }
+
+  _restoreHandlers() {
+    this._setInnerHandlers();
+  }
+
+  _setInnerHandlers() {
+    const self = this.getElement();
+    this._setDatePicker();
+
+    if (this._formType === FormType.EDIT) {
+      self
+      .querySelector(`.event__favorite-checkbox`)
+      .addEventListener(`click`, this._favoriteClickHandler);
+    }
+
+    self
+      .querySelector(`.event__type-list`)
+      .addEventListener(`change`, this._eventTypeClickHandler);
+    self
+      .querySelector(`.event__input--price`)
+      .addEventListener(`change`, this._priceChangeHandler);
+    self
+      .querySelector(`.event__section--offers`)
+      .addEventListener(`change`, this._offersChangeHandler);
+    self
+      .addEventListener(`submit`, this._submitClickHandler);
+    self
+      .querySelector(`.event__reset-btn`)
+      .addEventListener(`click`, this._deleteClickHandler);
+    self
+      .querySelector(`.event__input--destination`)
+      .addEventListener(`change`, this._destinationChangeHandler);
+  }
+
+  _setDatePicker() {
+    if (this._datePicker) {
+      this._datePicker.forEach((dp) => dp.destroy());
+      this._datePicker = null;
+    }
+
+    this._datePicker = flatpickr(
+        this.getElement().querySelectorAll(`.event__input--time`),
+        {
+          enableTime: true,
+          [`time_24hr`]: true,
+          dateFormat: FORM_FLATPICKR_DATE_FORMAT,
+          onChange: this._dateInputChangeHandler
+        }
+    );
+  }
+
+  _submitClickHandler(evt) {
+    evt.preventDefault();
+    this._callbacks.submit(PointFormView.parseDataToPoint(this._data));
+  }
+
+  _validateDestination(inputField) {
+    const isValidCity = this._destinations.names
+        .some((name) => name === inputField.value);
+
+    if (isValidCity) {
+      const selectedDesctination = this._destinations.all
+        .filter((dest) => dest.name === inputField.value);
+      this._data.formData.destination = selectedDesctination[0];
+      this.updateData(this._data);
+      inputField.setCustomValidity(``);
+    } else {
+      inputField.setCustomValidity(`Select one of cities from dropdown list`);
+    }
+  }
 
   static parsePointToData(point) {
     return Object.assign(
@@ -208,34 +208,42 @@ export default class PointFormView extends SmartView {
             type: point.type,
             offers: point.offers.slice(),
             destination: Object.assign({}, point.destination)
+          },
+          state: {
+            isDisabled: false,
+            isSaving: false,
+            isDeleting: false,
           }
         }
     );
   }
 
   static parseDataToPoint(data) {
-    Object.assign(
+    const point = Object.assign(
+        {},
         data,
         data.formData
     );
 
-    delete data.formData;
-    return data;
+    delete point.state;
+    delete point.formData;
+    return point;
   }
 }
 
 
-function createEventEditFormTemplate(formData, offers, destinationNames) {
+function createEventEditFormTemplate(data, offers, destinationNames, formType) {
+  const {formData, state} = data;
+  const {isDisabled, isSaving, isDeleting} = state;
 
   const destination = createEditFormDestinations(formData.destination);
   const pickDateFrom = getFormDateString(formData.dateFrom);
   const pickDateTo = getFormDateString(formData.dateTo);
   const offersByType = offers.filter((offer) => offer.type === formData.type)[0].offers;
   const pickedOffers = formData.offers;
-
+  const isSubmitDisabled = isDateBefore(formData.dateTo, formData.dateFrom);
   return (
-    `<li class="trip-events__item"> 
-      <form class="trip-events__item  event  event--edit" action="#" method="post">
+    `<form class="trip-events__item  event  event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -248,14 +256,14 @@ function createEventEditFormTemplate(formData, offers, destinationNames) {
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Transfer</legend>
 
-              ${createEventListTemplate(formData.type)}
+              ${createEventListTemplate(formData.type, isDisabled)}
 
             </fieldset>
 
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Activity</legend>
 
-              ${createActivityListTemplate(formData.type)}
+              ${createActivityListTemplate(formData.type, isDisabled)}
 
             </fieldset>
           </div>
@@ -263,7 +271,7 @@ function createEventEditFormTemplate(formData, offers, destinationNames) {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${formData.type} ${POINT_TYPE_PREFIXES[formData.type]}
+            ${capitalize(formData.type)} ${POINT_TYPE_PREFIXES[formData.type]}
           </label>
           <input 
             class="event__input  event__input--destination" 
@@ -271,7 +279,9 @@ function createEventEditFormTemplate(formData, offers, destinationNames) {
             type="text" 
             name="event-destination" 
             value="${formData.destination.name}" 
-            list="destination-list-1">
+            list="destination-list-1"
+            ${isDisabled ? `disabled` : ``}
+          >
           <datalist id="destination-list-1">
             ${createCitiesListTemplate(destinationNames)}
           </datalist>
@@ -282,22 +292,24 @@ function createEventEditFormTemplate(formData, offers, destinationNames) {
             From
           </label>
           <input
-                class="event__input event__input--time
-                "id="event-start-time-1"
-                type="text"
-                name="event-start-time"
-                value="${pickDateFrom}"
+            class="event__input event__input--time
+            "id="event-start-time-1"
+            type="text"
+            name="event-start-time"
+            value="${pickDateFrom}"
+            ${isDisabled ? `disabled` : ``}
           >
             &mdash;
           <label class="visually-hidden" for="event-end-time-1">
             To
           </label>
           <input
-                class="event__input event__input--time"
-                id="event-end-time-1"
-                type="text"
-                name="event-end-time"
-                value="${pickDateTo}"
+            class="event__input event__input--time"
+            id="event-end-time-1"
+            type="text"
+            name="event-end-time"
+            value="${pickDateTo}"
+            ${isDisabled ? `disabled` : ``}
           >
         </div>
 
@@ -309,30 +321,26 @@ function createEventEditFormTemplate(formData, offers, destinationNames) {
             &euro;
           </label>
           <input
-                class="event__input event__input--price"
-                id="event-price-1"
-                type="number"
-                name="event-price"
-                value="${formData.basePrice}"
-                min="0"
+            class="event__input event__input--price"
+            id="event-price-1"
+            type="number"
+            name="event-price"
+            value="${formData.basePrice}"
+            min="0"
+            ${isDisabled ? `disabled` : ``}
           >
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
+        <button 
+          class="event__save-btn  btn  btn--blue"
+          type="submit"
+          ${isSubmitDisabled || isDisabled ? `disabled` : ``}
+        >
+        ${isSaving ? `Saving` : `Save`}
+        </button>
 
-        <input
-              id="event-favorite-1"
-              class="event__favorite-checkbox  visually-hidden"
-              type="checkbox"
-              name="event-favorite"
-              ${formData.isFavorite ? `checked` : ``}>
-        <label class="event__favorite-btn" for="event-favorite-1">
-          <span class="visually-hidden">Add to favorite</span>
-          <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
-            <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
-          </svg>
-        </label>
+        ${formType === FormType.EDIT ? createDeleteButton(isDisabled, isDeleting) : createCancelButton(isDisabled)}
+        ${formType === FormType.EDIT ? createFavoriteButton(isDisabled, formData.isFavorite) : ``}
 
       </header>
       <section class="event__details">
@@ -340,17 +348,62 @@ function createEventEditFormTemplate(formData, offers, destinationNames) {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${createFormOffersTemplate(offersByType, pickedOffers)}
+            ${createFormOffersTemplate(offersByType, pickedOffers, isDisabled)}
           </div>
         </section>
       </section>
       ${destination}
-    </form>
-  </li>
-`);
+    </form>`
+  );
+}
+
+function createCancelButton(isDisabled) {
+  return (
+    `<button 
+      class="event__reset-btn" 
+      type="reset"
+      ${isDisabled ? `disabled` : ``}
+    >
+    Cancel
+  </button>`
+  );
+}
+
+function createDeleteButton(isDisabled, isDeleting) {
+  return (
+    `<button 
+      class="event__reset-btn" 
+      type="reset"
+      ${isDisabled ? `disabled` : ``}
+    >
+    ${isDeleting ? `Deleting` : `Delete`}
+  </button>`
+  );
+}
+
+function createFavoriteButton(isDisabled, isFavorite) {
+  return (
+    `<input
+      id="event-favorite-1"
+      class="event__favorite-checkbox  visually-hidden"
+      type="checkbox"
+      name="event-favorite"
+      ${isFavorite ? `checked` : ``}
+      ${isDisabled ? `disabled` : ``}
+    >
+    <label class="event__favorite-btn" for="event-favorite-1">
+      <span class="visually-hidden">Add to favorite</span>
+      <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
+        <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
+      </svg>
+    </label>`
+  );
 }
 
 function createEditFormDestinations(destination) {
+  if (!destination.description || destination.pictures.length === 0) {
+    return ``;
+  }
   return (
     `<section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -368,80 +421,91 @@ function createEditFormDestinations(destination) {
   );
 }
 
-function createFormOffersTemplate(offers, pickedOffers) {
+function createFormOffersTemplate(offers, pickedOffers, isDisabled) {
   return offers.map((offer) => {
     const isPicked = pickedOffers.some((pick) => pick.title === offer.title);
-    return `\
-      <div class="event__offer-selector">
+    return (
+      `<div class="event__offer-selector">
         <input class="event__offer-checkbox  visually-hidden"
-              id="event-offer-${offer.title}-1"
-              type="checkbox"
-              name="${offer.title}"
-              value="${offer.price}"
-              ${isPicked ? `checked` : ``}
+          id="event-offer-${offer.title}-1"
+          type="checkbox"
+          name="${offer.title}"
+          value="${offer.price}"
+          ${isPicked ? `checked` : ``}
+          ${isDisabled ? `disabled` : ``}
         >
-        <label class="event__offer-label"
-              for="event-offer-${offer.title}-1">
+        <label 
+          class="event__offer-label"
+          for="event-offer-${offer.title}-1"
+        >
           <span class="event__offer-title">
             ${offer.title}
           </span>
-          &plus;&euro;&nbsp;
+            &plus;&euro;&nbsp;
           <span class="event__offer-price">
           ${offer.price}
           </span>
         </label>
-      </div>`;
+      </div>`
+    );
   }).join(``);
 }
 
 function createCitiesListTemplate(destinationNames) {
   return destinationNames.map((city) => {
-    return `\
-      <option value="${city}"></option>`;
+    return (
+      `<option value="${city}"></option>`
+    );
   }).join(``);
 }
 
-function createEventListTemplate(selectedType) {
+function createEventListTemplate(selectedType, isDisabled) {
   return TRANSPORT_TYPES
     .map((type) => {
-      return `\
-      <div class="event__type-item">
+      return (
+        `<div class="event__type-item">
+          <input
+                id="event-type-${type}-1"
+                class="event__type-input visually-hidden"
+                type="radio"
+                name="event-type"
+                value="${type}"
+                ${selectedType === type.toLowerCase() ? `checked` : ``}
+                ${isDisabled ? `disabled` : ``}
+          >
+          <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
+        </div>`
+      );
+    }).join(``);
+}
+
+function createActivityListTemplate(selectedType, isDisabled) {
+  return ACTIVITY_TYPES.map((type) => {
+    return (
+      `<div class="event__type-item">
         <input
               id="event-type-${type}-1"
               class="event__type-input visually-hidden"
               type="radio"
               name="event-type"
               value="${type}"
-              ${selectedType === type ? `checked` : ``}
+              ${selectedType === type.toLowerCase() ? `checked` : ``}
+              ${isDisabled ? `disabled` : ``}
         >
         <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
-      </div>`;
-    }).join(``);
-}
-
-function createActivityListTemplate(selectedType) {
-  return ACTIVITY_TYPES.map((type) => {
-    return `\
-    <div class="event__type-item">
-      <input
-            id="event-type-${type}-1"
-            class="event__type-input visually-hidden"
-            type="radio"
-            name="event-type"
-            value="${type}"
-            ${selectedType === type ? `checked` : ``}
-      >
-      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
-    </div>`;
+      </div>`
+    );
   }).join(``);
 }
 
 function createPicturesTemplate(pictures) {
   return pictures.map((pic) => {
-    return `\
-    <img
-      class="event__photo"
-      src="${pic.src}"
-      alt="Event photo"></img>`;
+    return (
+      `<img
+        class="event__photo"
+        src="${pic.src}"
+        alt="Event photo">
+      </img>`
+    );
   }).join(``);
 }

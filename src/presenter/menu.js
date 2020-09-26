@@ -77,9 +77,11 @@ export default class MenuPresenter {
       case MenuTabs.TABLE:
         this._statsPresenter.destroy();
         this._tripPresenter.init();
+        this._addEventButton.enableButton();
         break;
       case MenuTabs.STATS:
         this._tripPresenter.destroy();
+        this._addEventButton.disableButton();
         this._statsPresenter.init();
         break;
     }

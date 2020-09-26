@@ -1,11 +1,12 @@
-import PointItemView from '../view/point/item.js';
+import PointEventView from '../view/point/event.js';
 import PointFormView from '../view/point/edit-form.js';
+import PointItemView from '../view/point/item.js';
 import {
   renderLastPlaceElement,
   replaceDOMElement,
   removeElement,
 } from '../utils/render.js';
-import {PointMode, UpdateType, UserAction} from '../consts.js';
+import {PointMode, UpdateType, UserAction, FormState} from '../consts.js';
 
 export default class PointPresenter {
   constructor(pointsList, changeData, changeMode, offers, destinations) {
@@ -16,6 +17,7 @@ export default class PointPresenter {
     this._destinations = destinations;
     this._mode = PointMode.DEFAULT;
 
+    this._componentWrapper = new PointItemView();
     this._pointItemComponent = null;
     this._pointFormComponent = null;
   }
@@ -26,14 +28,15 @@ export default class PointPresenter {
     const prevItemComponent = this._pointItemComponent;
     const prevFormComponent = this._pointFormComponent;
 
-    this._pointItemComponent = new PointItemView(point);
+    this._pointItemComponent = new PointEventView(point);
     this._pointFormComponent = new PointFormView(point, this._offers, this._destinations);
 
     this._bindInnerHandlers();
     this._setInnetHandlers();
 
     if (!prevItemComponent || !prevFormComponent) {
-      renderLastPlaceElement(this._pointsList, this._pointItemComponent);
+      renderLastPlaceElement(this._componentWrapper, this._pointItemComponent);
+      renderLastPlaceElement(this._pointsList, this._componentWrapper);
       return;
     }
 
@@ -42,12 +45,50 @@ export default class PointPresenter {
         replaceDOMElement(this._pointItemComponent, prevItemComponent);
         break;
       case PointMode.EDIT:
-        replaceDOMElement(this._pointFormComponent, prevFormComponent);
+        replaceDOMElement(this._pointItemComponent, prevFormComponent);
+        this._mode = PointMode.DEFAULT;
         break;
     }
 
     removeElement(prevItemComponent);
     removeElement(prevFormComponent);
+  }
+
+
+  _resetFormViewState() {
+    this._pointFormComponent.updateData({
+      state: {
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      }
+    });
+  }
+
+  setFormViewState(state) {
+    switch (state) {
+      case FormState.ABORTING:
+        this._pointFormComponent.shake(this._resetFormViewState);
+        break;
+
+      case FormState.DELETING:
+        this._pointFormComponent.updateData({
+          state: {
+            isDeleting: true,
+            isDisabled: true
+          }
+        });
+        break;
+
+      case FormState.SAVING:
+        this._pointFormComponent.updateData({
+          state: {
+            isSaving: true,
+            isDisabled: true
+          }
+        });
+        break;
+    }
   }
 
   _bindInnerHandlers() {
@@ -56,6 +97,8 @@ export default class PointPresenter {
     this._switchToPointItem = this._switchToPointItem.bind(this);
     this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._submitClickHandler = this._submitClickHandler.bind(this);
+    this._resetFormViewState = this._resetFormViewState.bind(this);
+
   }
 
   _setInnetHandlers() {
@@ -65,7 +108,7 @@ export default class PointPresenter {
   }
 
   _windowEscHandler(evt) {
-    if (evt.key === `Escape`) {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
       this._pointFormComponent.reset(this._point);
       this._switchToPointItem();
@@ -101,8 +144,6 @@ export default class PointPresenter {
           UpdateType.MINOR,
           point
       );
-    } else {
-      this._switchToPointItem();
     }
   }
 
