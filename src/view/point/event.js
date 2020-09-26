@@ -6,7 +6,6 @@ import {
 } from '../../utils/date.js';
 import {capitalizeString as capitalize} from '../../utils/common.js';
 
-
 import {POINT_TYPE_PREFIXES, OFFER_ITEM_VIEW_LIMIT} from '../../consts.js';
 
 function createEventItemTemplate(point) {
