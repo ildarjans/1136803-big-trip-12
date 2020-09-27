@@ -16,7 +16,7 @@ export default class StatsPresenter {
   }
 
   init() {
-    this._statsComponent = new StatsView(this._pointModel.getPoints());
+    this._statsComponent = new StatsView(this._pointModel.points);
     this._renderStats();
   }
 

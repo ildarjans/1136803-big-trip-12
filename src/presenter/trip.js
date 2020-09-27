@@ -55,6 +55,15 @@ export default class TripPresenter {
     );
   }
 
+  get container() {
+    return this._pointsContainer;
+  }
+
+  set menuPresenter(menuPresenter) {
+    this._menuPresenter = menuPresenter;
+  }
+
+
   init() {
     this._renderTrip();
 
@@ -78,14 +87,6 @@ export default class TripPresenter {
     this._pointModel.removeObserver(this._modelEventHandler);
     this._filterModel.removeObserver(this._modelEventHandler);
 
-  }
-
-  getContainer() {
-    return this._pointsContainer;
-  }
-
-  setMenuPresenter(menuPresenter) {
-    this._menuPresenter = menuPresenter;
   }
 
   _bindInnerHandlers() {
@@ -154,8 +155,8 @@ export default class TripPresenter {
   }
 
   _getPoints() {
-    const filterType = this._filterModel.getFilter();
-    const points = this._pointModel.getPoints();
+    const filterType = this._filterModel.filter;
+    const points = this._pointModel.points;
     const filteredPoints = FilterPresenter.getFilteredPoints(points, filterType);
     switch (this._currentSortType) {
       case SortType.PRICE:
@@ -201,8 +202,8 @@ export default class TripPresenter {
     }
 
     const points = this._getPoints();
-    const offers = this._pointModel.getOffers();
-    const destinations = this._pointModel.getDestinations();
+    const offers = this._pointModel.offers;
+    const destinations = this._pointModel.destinations;
 
     if (points === null || points.length === 0) {
       this._renderEmptyMessage();
@@ -215,7 +216,7 @@ export default class TripPresenter {
     let dayCounter = 0;
 
     points.forEach((point) => {
-      let tripDay = point.dateFrom;
+      const tripDay = point.dateFrom;
 
       if (!isSameDate(lastDay, tripDay)) {
         dayCounter++;

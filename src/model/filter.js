@@ -7,7 +7,7 @@ export default class FilterModel extends Observer {
     this._appliedFilter = FilterType.EVERYTHING;
   }
 
-  getFilter() {
+  get filter() {
     return this._appliedFilter;
   }
 

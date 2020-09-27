@@ -1,36 +1,25 @@
 import moment from 'moment';
 import {FORM_MOMENT_DATE_FORMAT} from '../consts.js';
 
-function getCustomDateObject(dateObj, ...literals) {
-  /**
-  * function apply string literals
-  @yyyy year 4-digit format
-  @yy year 2-digit format
-  @mm month 2-digit format
-  @MMM short month Jan, Feb etc...
-  @MMMM full month January, Febrary etc...
-  @dd date 2-digit format
-  @h hour 2-digit format
-  @m minutes 2-digit format */
-
+function getCustomDateObject(date, ...literals) {
   const fnLiterals = {
-    yyyy: () => `${zeroPad(dateObj.getFullYear())}`,
-    yy: () => `${dateObj.getFullYear()}`.slice(2),
-    mm: () => `${zeroPad(dateObj.getMonth())}`,
-    MMM: () => `${getMonthString(dateObj)}`,
-    MMMM: () => `${getMonthString(dateObj, true)}`,
-    dd: () => `${zeroPad(dateObj.getDate())}`,
-    h: () => `${zeroPad(dateObj.getHours())}`,
-    m: () => `${zeroPad(dateObj.getMinutes())}`,
+    yyyy: () => `${getZeroPad(date.getFullYear())}`,
+    yy: () => `${date.getFullYear()}`.slice(2),
+    mm: () => `${getZeroPad(date.getMonth())}`,
+    MMM: () => `${getMonthString(date)}`,
+    MMMM: () => `${getMonthString(date, true)}`,
+    dd: () => `${getZeroPad(date.getDate())}`,
+    h: () => `${getZeroPad(date.getHours())}`,
+    m: () => `${getZeroPad(date.getMinutes())}`,
   };
-  if (typeof dateObj === `string`) {
-    dateObj = new Date(dateObj);
+  if (typeof date === `string`) {
+    date = new Date(date);
   }
 
-  if (Object.prototype.toString.call(dateObj) !== `[object Date]`) {
+  if (Object.prototype.toString.call(date) !== `[object Date]`) {
     throw new Error(`first parametr must be Date object`);
   }
-  let resultObj = {};
+  const result = {};
   if (!literals.length) {
     literals = [
       `yyyy`,
@@ -45,11 +34,11 @@ function getCustomDateObject(dateObj, ...literals) {
   }
   literals.forEach((arg) => {
     if (fnLiterals[arg]) {
-      resultObj[arg] = fnLiterals[arg]();
+      result[arg] = fnLiterals[arg]();
     }
   });
 
-  return resultObj;
+  return result;
 }
 
 function calcTimeDiff(date1, date2) {
@@ -69,7 +58,7 @@ function calcTimeDiff(date1, date2) {
   return {days, hours, minutes};
 }
 
-function zeroPad(number) {
+function getZeroPad(number) {
   return number < 10 ? `0${number}` : number;
 }
 
@@ -78,24 +67,20 @@ function getMonthString(dateObj, long = false) {
 }
 
 export function getTimeDiffString(date1, date2) {
-  // Менее часа: минуты (например «23M»);
-  // Менее суток: часы минуты (например «02H 44M»);
-  // Более суток: дни часы минуты (например «01D 02H 30M»);
   const {days, hours, minutes} = calcTimeDiff(date1, date2);
 
-  const d = `${zeroPad(days)}`;
-  const h = `${zeroPad(hours)}`;
-  const m = `${zeroPad(minutes)}`;
+  const d = `${getZeroPad(days)}`;
+  const h = `${getZeroPad(hours)}`;
+  const m = `${getZeroPad(minutes)}`;
 
-  return `\
-  ${ d !== `00` ? `${d}D` : ``}\
-  ${ h !== `00` ? `${h}H` : ``}\
-  ${ m !== `00` ? `${m}M` : ``}`
-  .trim();
+  return (
+    `${ d !== `00` ? `${d}D` : ``}\
+    ${ h !== `00` ? `${h}H` : ``}\
+    ${ m !== `00` ? `${m}M` : ``}`
+  ).trim();
 }
 
 export function isSameDate(date1, date2) {
-  // compare date strings like yyyy-mm-dd
   if (Object.prototype.toString.call(date1) === `[object Date]` &&
       Object.prototype.toString.call(date2) === `[object Date]`) {
     const date1Str = getCustomDateString(date1);
@@ -105,45 +90,44 @@ export function isSameDate(date1, date2) {
   return false;
 }
 
-export function getCustomDateLocaleString(dateObj) {
-  // return string like this -> yyyy-mm-ddThh:mm
+export function getCustomDateLocaleString(date) {
   const {
     yyyy: fullYear,
-    mm: month,
-    dd: date,
+    mm: twoDigitMonth,
+    dd: twoDigitDate,
     h: hour,
     m: minutes,
-  } = getCustomDateObject(dateObj, `yyyy`, `mm`, `dd`, `h`, `m`);
+  } = getCustomDateObject(date, `yyyy`, `mm`, `dd`, `h`, `m`);
 
-  return `${fullYear}-${month}-${date}T${hour}:${minutes}`;
+  return `${fullYear}-${twoDigitMonth}-${twoDigitDate}T${hour}:${minutes}`;
 }
 
-export function getShortMonthDayString(dateObj) {
+export function getShortMonthDayString(date) {
   const {
     MMM: monthShort,
-    dd: date,
-  } = getCustomDateObject(dateObj, `MMM`, `dd`);
+    dd: twoDigitDate,
+  } = getCustomDateObject(date, `MMM`, `dd`);
 
-  return `${monthShort} ${date}`;
+  return `${monthShort} ${twoDigitDate}`;
 }
 
-export function getCustomDateString(dateObj) {
+export function getCustomDateString(date) {
   const {
     yyyy: fullYear,
-    mm: month,
-    dd: date,
-  } = getCustomDateObject(dateObj, `yyyy`, `mm`, `dd`);
+    mm: twoDigitMonth,
+    dd: twoDigitDate,
+  } = getCustomDateObject(date, `yyyy`, `mm`, `dd`);
 
-  return `${fullYear}-${month}-${date}`;
+  return `${fullYear}-${twoDigitMonth}-${twoDigitDate}`;
 }
 
-export function getCustomTimeString(dateObj) {
+export function getCustomTimeString(date) {
   const {
     h: hour,
-    m: month,
-  } = getCustomDateObject(dateObj, `h`, `m`);
+    m: minutes,
+  } = getCustomDateObject(date, `h`, `m`);
 
-  return `${hour}:${month}`;
+  return `${hour}:${minutes}`;
 }
 
 export function getFormDateString(date) {
@@ -151,15 +135,15 @@ export function getFormDateString(date) {
 }
 
 export function getEventDurationString(dateFrom, dateTo) {
-  const from = moment(dateFrom);
-  const to = moment(dateTo);
-  const duration = moment.duration(to.diff(from));
+  const momentFrom = moment(dateFrom);
+  const momentTo = moment(dateTo);
+  const duration = moment.duration(momentTo.diff(momentFrom));
   let d = duration.days();
   let h = duration.hours();
   let m = duration.minutes();
-  d = d ? `${zeroPad(d)}D` : ``;
-  h = h ? `${zeroPad(h)}H` : ``;
-  m = m ? `${zeroPad(m)}M` : ``;
+  d = d ? `${getZeroPad(d)}D` : ``;
+  h = h ? `${getZeroPad(h)}H` : ``;
+  m = m ? `${getZeroPad(m)}M` : ``;
   return `${d} ${h} ${m}`;
 }
 

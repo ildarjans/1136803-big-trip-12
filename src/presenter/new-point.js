@@ -37,8 +37,8 @@ export default class NewPointPresenter {
 
     this._pointFormComponent = new PointFormView(
         BLANK_EVENT,
-        this._pointModel.getOffers(),
-        this._pointModel.getDestinations(),
+        this._pointModel.offers,
+        this._pointModel.destinations,
         FormType.NEW
     );
     this._pointFormComponent.setSubmitClickHandler(this._submitClickHandler);

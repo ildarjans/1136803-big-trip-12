@@ -27,14 +27,14 @@ Promise.all([
   api.getDestinations(Url.DESTINATIONS)
 ])
   .then(([points, offers, destinations]) => {
-    pointModel.setOffers(offers);
-    pointModel.setDestinations(destinations);
+    pointModel.offers = offers;
+    pointModel.destinations = destinations;
     pointModel.setPoints(UpdateType.INIT, points);
     menuPresenter.activateMenu();
-    tripPresenter.setMenuPresenter(menuPresenter);
+    tripPresenter.menuPresenter = menuPresenter;
   })
   .catch(() => {
-    pointModel.setOffers([]);
-    pointModel.setDestinations([]);
+    pointModel.offers = [];
+    pointModel.destinations = [];
     pointModel.setPoints(UpdateType.INIT, []);
   });

@@ -1,5 +1,4 @@
 import MenuControlsView from '../view/menu/controls.js';
-import MenuInfoView from '../view/menu/info.js';
 import FilterPresenter from '../presenter/filter.js';
 import StatsPresenter from '../presenter/stats.js';
 import MenuTabsView from '../view/menu/tabs.js';
@@ -21,11 +20,10 @@ export default class MenuPresenter {
     this._activeTabMenu = MenuTabs.TABLE;
 
     this._menuControls = new MenuControlsView();
-    this._menuInfo = new MenuInfoView();
     this._filterPresenter = new FilterPresenter(this._menuControls, this._pointModel, this._filterModel);
     this._menuTabs = new MenuTabsView();
     this._addEventButton = new AddPointView();
-    this._statsPresenter = new StatsPresenter(this._tripPresenter.getContainer(), this._pointModel, this._filterModel);
+    this._statsPresenter = new StatsPresenter(this._tripPresenter.container, this._pointModel, this._filterModel);
 
     this._addNewPointClickHandler = this._addNewPointClickHandler.bind(this);
     this._tabsClickHandler = this._tabsClickHandler.bind(this);
@@ -58,7 +56,6 @@ export default class MenuPresenter {
   _renderMenu() {
     renderAfterFirstChild(this._menuControls, this._menuTabs);
     renderFirstPlaceElement(this._container, this._menuControls);
-    renderFirstPlaceElement(this._container, this._menuInfo);
     renderLastPlaceElement(this._container, this._addEventButton);
   }
 

@@ -10,6 +10,27 @@ export default class PointModel extends Observer {
     this._destinations = [];
   }
 
+  get points() {
+    return this._points.slice();
+  }
+
+  get offers() {
+    return this._offers.slice();
+  }
+
+  get destinations() {
+    return this._destinations;
+  }
+
+  set offers(offers) {
+    this._offers = offers;
+  }
+
+  set destinations(destinations) {
+    this._destinations = destinations;
+  }
+
+
   addPoint(updateType, update) {
     this._points = [
       update,
@@ -17,18 +38,6 @@ export default class PointModel extends Observer {
     ];
 
     this._notify(updateType, update);
-  }
-
-  getPoints() {
-    return this._points.slice();
-  }
-
-  getOffers() {
-    return this._offers.slice();
-  }
-
-  getDestinations() {
-    return this._destinations;
   }
 
   deletePoint(updateType, update) {
@@ -47,14 +56,6 @@ export default class PointModel extends Observer {
     this._points = points.sort(sortTripsByDate);
 
     this._notify(updateType);
-  }
-
-  setOffers(offers) {
-    this._offers = offers;
-  }
-
-  setDestinations(destinations) {
-    this._destinations = destinations;
   }
 
   updatePoint(updateType, update) {

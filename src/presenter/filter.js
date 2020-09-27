@@ -27,7 +27,7 @@ export default class FilterPresenter {
   }
 
   init() {
-    this._activeFilter = this._filterModel.getFilter();
+    this._activeFilter = this._filterModel.filter;
     const prevComponent = this._filterComponent;
     this._filterComponent = new MenuFiltersView(this._activeFilter);
     this._filterComponent.setFilterChangeHandler(this._filterChangeHandler);
