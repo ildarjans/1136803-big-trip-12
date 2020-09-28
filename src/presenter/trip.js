@@ -59,6 +59,10 @@ export default class TripPresenter {
     return this._pointsContainer;
   }
 
+  get newPointPresenter() {
+    return this._newPointPresenter;
+  }
+
   set menuPresenter(menuPresenter) {
     this._menuPresenter = menuPresenter;
   }
@@ -72,15 +76,11 @@ export default class TripPresenter {
 
   }
 
-  createPoint(enableButton) {
-    this._newPointPresenter.init(enableButton);
+  createPoint(destroyCallback) {
+    this._newPointPresenter.init(destroyCallback);
   }
 
   destroy() {
-    if (this._emptyMessageComponent) {
-      removeElement(this._emptyMessageComponent);
-    }
-
     this._clearDaysList({resetSortType: true});
     this._newPointPresenter.destroy();
 
@@ -136,6 +136,10 @@ export default class TripPresenter {
   }
 
   _clearDaysList({resetSortType = false, deactivateMenu = false} = {}) {
+    if (this._emptyMessageComponent) {
+      removeElement(this._emptyMessageComponent);
+    }
+
     if (deactivateMenu) {
       this._menuPresenter.deactivateMenu();
     }
@@ -175,7 +179,7 @@ export default class TripPresenter {
         this._pointPresenter[data.id].init(data);
         break;
       case UpdateType.MINOR:
-        this._clearDaysList();
+        this._clearDaysList({deactivateMenu: true});
         this._renderTrip();
         break;
       case UpdateType.MAJOR:
@@ -205,6 +209,10 @@ export default class TripPresenter {
     const offers = this._pointModel.offers;
     const destinations = this._pointModel.destinations;
 
+    if (this._menuPresenter) {
+      this._menuPresenter.activateMenu();
+    }
+
     if (points === null || points.length === 0) {
       this._renderEmptyMessage();
       return;
@@ -231,10 +239,6 @@ export default class TripPresenter {
       this._setPointComponent(point, offers, destinations);
 
     });
-
-    if (this._menuPresenter) {
-      this._menuPresenter.activateMenu();
-    }
 
     renderLastPlaceElement(this._pointsContainer, this._daysListComponent);
   }

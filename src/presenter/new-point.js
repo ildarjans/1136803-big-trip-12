@@ -24,11 +24,13 @@ export default class NewPointPresenter {
     this._destroyCallback = null;
     this._bindInnerHandlers();
 
+    this._isActive = false;
+
   }
 
-  init(cb) {
-    this._destroyCallback = cb;
+  init() {
     if (this._pointFormComponent) {
+      this.destroy();
       return;
     }
 
@@ -49,6 +51,8 @@ export default class NewPointPresenter {
     this._pointFormComponent.validateForm();
 
     document.addEventListener(`keydown`, this._escKeyDownHandler);
+
+    this._isActive = true;
   }
 
   destroy() {
@@ -56,15 +60,10 @@ export default class NewPointPresenter {
       return;
     }
 
-    if (this._destroyCallback) {
-      this._destroyCallback();
-    }
-
     removeElement(this._pointFormComponent);
     this._pointFormComponent = null;
 
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
-
   }
 
   setAborting() {
@@ -111,7 +110,7 @@ export default class NewPointPresenter {
   _submitClickHandler(point) {
     this._changeData(
         UserAction.ADD_POINT,
-        UpdateType.MAJOR,
+        UpdateType.MINOR,
         point
     );
   }

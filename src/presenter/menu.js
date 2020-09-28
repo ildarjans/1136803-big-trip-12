@@ -60,8 +60,7 @@ export default class MenuPresenter {
   }
 
   _addNewPointClickHandler() {
-    this._tripPresenter.createPoint(this._addEventButton.enableButton);
-    this._addEventButton.disableButton();
+    this._tripPresenter.createPoint();
   }
 
   _tabsClickHandler(tabElement) {

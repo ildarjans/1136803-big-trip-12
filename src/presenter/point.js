@@ -118,7 +118,7 @@ export default class PointPresenter {
   _deleteClickHandler(point) {
     this._changeData(
         UserAction.DELETE_POINT,
-        UpdateType.MAJOR,
+        UpdateType.MINOR,
         point
     );
     window.removeEventListener(`keydown`, this._windowEscHandler);

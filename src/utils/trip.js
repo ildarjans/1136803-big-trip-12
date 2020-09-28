@@ -21,7 +21,7 @@ export function sortEventsByTime(a, b) {
 
 }
 
-export function sortTripsByDate(a, b) {
-  return a.dateFrom.getTime() - b.dateTo.getTime();
+export function sortTripsByDateFrom(a, b) {
+  return a.dateFrom.getTime() - b.dateFrom.getTime();
 }
 

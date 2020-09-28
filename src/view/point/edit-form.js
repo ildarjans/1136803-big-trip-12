@@ -256,7 +256,7 @@ function createEventListTemplate(selectedType, isDisabled) {
                 ${selectedType === type.toLowerCase() ? `checked` : ``}
                 ${isDisabled ? `disabled` : ``}
           >
-          <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
+          <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type}-1">${type}</label>
         </div>`
       );
     }).join(``);
@@ -275,7 +275,7 @@ function createActivityListTemplate(selectedType, isDisabled) {
               ${selectedType === type.toLowerCase() ? `checked` : ``}
               ${isDisabled ? `disabled` : ``}
         >
-        <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
+        <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type}-1">${type}</label>
       </div>`
     );
   }).join(``);
