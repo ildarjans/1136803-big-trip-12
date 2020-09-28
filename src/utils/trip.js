@@ -1,27 +1,22 @@
-export function sortEventsByPrice(a, b) {
+export function sortPointByPrice(a, b) {
   const priceA = a.basePrice;
   const priceB = b.basePrice;
 
-  if (priceA === priceB) {
-    return 0;
-  }
-
-  return priceA > priceB ? -1 : 1;
+  return priceB - priceA;
 }
 
-export function sortEventsByTime(a, b) {
-  const eventDurationA = a.dateTo - a.dateFrom;
-  const eventDurationB = b.dateTo - b.dateFrom;
+export function sortPointsByDurationTime(pointA, pointB) {
+  const durationA = pointA.dateTo - pointA.dateFrom;
+  const durationB = pointB.dateTo - pointB.dateFrom;
 
-  if (eventDurationA === eventDurationB) {
-    return 0;
-  }
-
-  return eventDurationA > eventDurationB ? -1 : 1;
-
+  return durationB - durationA;
 }
 
-export function sortTripsByDateFrom(a, b) {
-  return a.dateFrom.getTime() - b.dateFrom.getTime();
+export function sortPointByDateFrom(pointA, pointB) {
+  return pointA.dateFrom.getTime() - pointB.dateFrom.getTime();
+}
+
+export function capitalizeString(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }
 

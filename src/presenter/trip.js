@@ -14,8 +14,9 @@ import PointPresenter from './point.js';
 import NewPointPresenter from './new-point.js';
 import {isSameDate} from '../utils/date.js';
 import {
-  sortEventsByPrice,
-  sortEventsByTime
+  sortPointByPrice,
+  sortPointsByDurationTime,
+  sortPointByDateFrom
 } from '../utils/trip.js';
 import {
   renderLastPlaceElement,
@@ -108,7 +109,9 @@ export default class TripPresenter {
           });
         break;
       case UserAction.UPDATE_POINT:
-        this._pointPresenter[updatedPoint.id].setFormViewState(FormState.SAVING);
+        if (updateType !== UpdateType.PATCH) {
+          this._pointPresenter[updatedPoint.id].setFormViewState(FormState.SAVING);
+        }
         this._api.updatePoint(updatedPoint)
           .then((response) => {
             this._pointModel.updatePoint(updateType, response);
@@ -153,6 +156,8 @@ export default class TripPresenter {
     removeElement(this._pointSortComponent);
     this._pointPresenter = {};
 
+    this._newPointPresenter.destroy();
+
     if (resetSortType) {
       this._currentSortType = SortType.DEFAULT;
     }
@@ -164,19 +169,19 @@ export default class TripPresenter {
     const filteredPoints = FilterPresenter.getFilteredPoints(points, filterType);
     switch (this._currentSortType) {
       case SortType.PRICE:
-        return filteredPoints.sort(sortEventsByPrice);
+        return filteredPoints.sort(sortPointByPrice);
       case SortType.TIME:
-        return filteredPoints.sort(sortEventsByTime);
+        return filteredPoints.sort(sortPointsByDurationTime);
     }
 
-    return filteredPoints;
+    return filteredPoints.sort(sortPointByDateFrom);
 
   }
 
-  _modelEventHandler(updateType, data) {
+  _modelEventHandler(updateType, point) {
     switch (updateType) {
       case UpdateType.PATCH:
-        this._pointPresenter[data.id].init(data);
+        this._pointPresenter[point.id].init(point, UpdateType.PATCH);
         break;
       case UpdateType.MINOR:
         this._clearDaysList({deactivateMenu: true});

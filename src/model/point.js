@@ -1,5 +1,5 @@
 import Observer from '../utils/observer.js';
-import {sortTripsByDateFrom} from '../utils/trip.js';
+import {sortPointByDateFrom} from '../utils/trip.js';
 import {getDateISOString} from '../utils/date.js';
 
 export default class PointModel extends Observer {
@@ -37,7 +37,7 @@ export default class PointModel extends Observer {
       ...this._points
     ];
 
-    this._points.sort(sortTripsByDateFrom);
+    this._points.sort(sortPointByDateFrom);
 
     this._notify(updateType, update);
   }
@@ -55,7 +55,7 @@ export default class PointModel extends Observer {
   }
 
   setPoints(updateType, points) {
-    this._points = points.sort(sortTripsByDateFrom);
+    this._points = points.sort(sortPointByDateFrom);
 
     this._notify(updateType);
   }

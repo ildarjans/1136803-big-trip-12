@@ -2,7 +2,7 @@ import {
   getFormDateString,
   isDateBefore,
 } from '../../utils/date.js';
-import {capitalizeString as capitalize} from '../../utils/common.js';
+import {capitalizeString as capitalize} from '../../utils/trip.js';
 import SmartView from '../smart.js';
 import {
   TRANSPORT_TYPES,
@@ -15,8 +15,8 @@ import {
 import flatpickr from 'flatpickr';
 import '../../../node_modules/flatpickr/dist/flatpickr.min.css';
 
-function createEventEditFormTemplate(data, offers, destinationNames, formType) {
-  const {formData, state} = data;
+function createEventEditFormTemplate(point, offers, destinationNames, formType) {
+  const {formData, state} = point;
   const {isDisabled, isSaving, isDeleting} = state;
 
   const destination = createEditFormDestinations(formData.destination);
@@ -297,7 +297,7 @@ function createPicturesTemplate(pictures) {
 export default class PointFormView extends SmartView {
   constructor(point, offers, destinations, formType = FormType.EDIT) {
     super();
-    this._data = PointFormView.parsePointToData(point);
+    this._pointData = PointFormView.parsePointToData(point);
     this._offers = offers;
     this._destinations = destinations;
     this._formType = formType;
@@ -314,6 +314,10 @@ export default class PointFormView extends SmartView {
 
   setDeleteClickHandler(cb) {
     this._callbacks.delete = cb;
+  }
+
+  setFavoriteClickHandler(cb) {
+    this._callbacks.favorite = cb;
   }
 
   setSubmitClickHandler(cb) {
@@ -341,17 +345,17 @@ export default class PointFormView extends SmartView {
   _dateInputChangeHandler(selectedDate, dateStr, self) {
     switch (self.input.name) {
       case (`event-start-time`):
-        this.updateData(this._data.formData.dateFrom = selectedDate[0]);
+        this.updateData(this._pointData.formData.dateFrom = selectedDate[0]);
         break;
       case (`event-end-time`):
-        this.updateData(this._data.formData.dateTo = selectedDate[0]);
+        this.updateData(this._pointData.formData.dateTo = selectedDate[0]);
         break;
     }
   }
 
   _deleteClickHandler(evt) {
     evt.preventDefault();
-    this._callbacks.delete(this._data);
+    this._callbacks.delete(this._pointData);
   }
 
   _destinationChangeHandler(evt) {
@@ -359,23 +363,25 @@ export default class PointFormView extends SmartView {
   }
 
   _favoriteClickHandler(evt) {
-    this._data.formData.isFavorite = evt.target.checked;
-    this.updateData(this._data, true);
+    evt.preventDefault();
+    this._pointData.formData.isFavorite = evt.target.checked;
+    this.updateData(this._pointData, true);
+    this._callbacks.favorite(PointFormView.parseDataToPoint(this._pointData));
   }
 
   _eventTypeClickHandler(evt) {
     evt.preventDefault();
     if (evt.target.classList.contains(`event__type-input`)) {
-      this._data.formData.type = (evt.target.value).toLowerCase();
-      this._data.formData.offers = [];
-      this.updateData(this._data);
+      this._pointData.formData.type = (evt.target.value).toLowerCase();
+      this._pointData.formData.offers = [];
+      this.updateData(this._pointData);
     }
     this.validateForm();
   }
 
   _getTemplate() {
     return createEventEditFormTemplate(
-        this._data,
+        this._pointData,
         this._offers,
         this._destinations.names,
         this._formType
@@ -386,7 +392,7 @@ export default class PointFormView extends SmartView {
     const isPicked = evt.target.checked;
     const title = evt.target.name;
     const price = evt.target.value ? parseInt(evt.target.value, 10) : 0;
-    const offers = this._data.formData.offers;
+    const offers = this._pointData.formData.offers;
 
     if (isPicked) {
       offers.push({title, price});
@@ -396,12 +402,12 @@ export default class PointFormView extends SmartView {
         offers.splice(index, 1);
       }
     }
-    this.updateData(this._data, true);
+    this.updateData(this._pointData, true);
   }
 
   _priceChangeHandler(evt) {
-    this._data.formData.basePrice = parseInt(evt.target.value, 10);
-    this.updateData(this._data, true);
+    this._pointData.formData.basePrice = parseInt(evt.target.value, 10);
+    this.updateData(this._pointData, true);
   }
 
   _restoreHandlers() {
@@ -456,7 +462,7 @@ export default class PointFormView extends SmartView {
 
   _submitClickHandler(evt) {
     evt.preventDefault();
-    this._callbacks.submit(PointFormView.parseDataToPoint(this._data));
+    this._callbacks.submit(PointFormView.parseDataToPoint(this._pointData));
   }
 
   _validateDestination(inputField) {
@@ -466,8 +472,8 @@ export default class PointFormView extends SmartView {
     if (isValidCity) {
       const selectedDesctination = this._destinations.all
         .filter((dest) => dest.name === inputField.value);
-      this._data.formData.destination = selectedDesctination[0];
-      this.updateData(this._data);
+      this._pointData.formData.destination = selectedDesctination[0];
+      this.updateData(this._pointData);
       inputField.setCustomValidity(``);
     } else {
       inputField.setCustomValidity(`Select one of cities from dropdown list`);
@@ -497,11 +503,11 @@ export default class PointFormView extends SmartView {
     );
   }
 
-  static parseDataToPoint(data) {
+  static parseDataToPoint(pointData) {
     const point = Object.assign(
         {},
-        data,
-        data.formData
+        pointData,
+        pointData.formData
     );
 
     delete point.state;

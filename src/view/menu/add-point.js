@@ -7,6 +7,14 @@ export default class AddPointView extends AbstractView {
     this._addPointHandler = this._addPointHandler.bind(this);
   }
 
+  disableButton() {
+    this.getElement.disable = true;
+  }
+
+  enableButton() {
+    this.getElement.disable = false;
+  }
+
   setAddPointClickHandler(cb) {
     this._callbacks.addPoint = cb;
     this.getElement()

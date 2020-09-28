@@ -8,67 +8,25 @@ import {
 } from '../utils/date.js';
 
 
-export default class StatsView extends AbstractView {
-  constructor(points) {
-    super();
-    this._points = points;
-
-    this._moneyChart = null;
-    this._transportChart = null;
-
-    this._setCharts();
-  }
-
-  _getTemplate() {
-    return (
-      `<section class="statistics">
-      <h2 class="visually-hidden">Trip statistics</h2>
-
-      <div class="statistics__item statistics__item--money">
-        <canvas class="statistics__chart  statistics__chart--money" width="900"></canvas>
-      </div>
-
-      <div class="statistics__item statistics__item--transport">
-        <canvas class="statistics__chart  statistics__chart--transport" width="900"></canvas>
-      </div>
-
-      <div class="statistics__item statistics__item--time-spend">
-        <canvas class="statistics__chart  statistics__chart--time" width="900"></canvas>
-      </div>
-    </section>`
-    );
-  }
-
-  _setCharts() {
-    if (this._transportChart || this._moneyChart || this._timeSpendChart) {
-      this._transportChart = null;
-      this._moneyChart = null;
-      this._timeSpendChart = null;
-    }
-
-    const transportCtx = this.getElement().querySelector(`.statistics__chart--transport`).getContext(`2d`);
-    const moneyCtx = this.getElement().querySelector(`.statistics__chart--money`).getContext(`2d`);
-    const timeCtx = this.getElement().querySelector(`.statistics__chart--time`).getContext(`2d`);
-
-    this._transportChart = renderTransportChart(transportCtx, this._points);
-    this._moneyChart = renderMoneyChart(moneyCtx, this._points);
-    this._timeSpendChart = renderSpentTimeChart(timeCtx, this._points);
-  }
+function getTypeCounterDictionary(...types) {
+  const result = {};
+  types.forEach((type) => {
+    result[type.toLowerCase()] = 0;
+  });
+  return result;
 }
 
-
 function renderMoneyChart(ctx, points) {
-  const pointTypesDict = [...ACTIVITY_TYPES, ...TRANSPORT_TYPES]
-    .reduce((accum, type) => Object.assign(accum, {[type.toLowerCase()]: 0}), {});
+  const typesDictionary = getTypeCounterDictionary(...ACTIVITY_TYPES, ...TRANSPORT_TYPES);
 
   points.forEach((point) => {
-    pointTypesDict[point.type] += point.basePrice;
+    typesDictionary[point.type] += point.basePrice;
   });
 
   const pointTypes = [];
   const pointCosts = [];
   Object
-    .entries(pointTypesDict)
+    .entries(typesDictionary)
     .forEach(([key, value]) => {
       if (value > 0) {
         pointTypes.push(key);
@@ -148,24 +106,23 @@ function renderMoneyChart(ctx, points) {
 }
 
 function renderSpentTimeChart(ctx, points) {
-  const pointTypesDict = [...ACTIVITY_TYPES, ...TRANSPORT_TYPES]
-    .reduce((accum, type) => Object.assign(accum, {[type.toLowerCase()]: 0}), {});
+  const typesDictionary = getTypeCounterDictionary(...ACTIVITY_TYPES, ...TRANSPORT_TYPES);
 
   points.forEach((point) => {
     const dateFrom = point.dateFrom;
     const dateTo = point.dateTo;
     const duration = getEventDurationInMinutes(dateFrom, dateTo);
-    pointTypesDict[point.type] += duration;
+    typesDictionary[point.type] += duration;
   });
 
   const pointTypes = [];
-  const pointTime = [];
+  const pointTimes = [];
   Object
-    .entries(pointTypesDict)
+    .entries(typesDictionary)
     .forEach(([key, value]) => {
       if (value > 0) {
         pointTypes.push(key);
-        pointTime.push(convertMsInHours(value));
+        pointTimes.push(convertMsInHours(value));
       }
     });
   return new Chart(ctx, {
@@ -175,7 +132,7 @@ function renderSpentTimeChart(ctx, points) {
       labels: pointTypes,
       datasets: [
         {
-          data: pointTime,
+          data: pointTimes,
           backgroundColor: `#5c4eff`,
           hoverBackgroundColor: `#4636e2`,
           anchor: `start`,
@@ -241,18 +198,17 @@ function renderSpentTimeChart(ctx, points) {
 }
 
 function renderTransportChart(ctx, points) {
-  const transportDict = TRANSPORT_TYPES
-    .reduce((accum, type) => Object.assign(accum, {[type.toLowerCase()]: 0}), {});
+  const typesDictionary = getTypeCounterDictionary(...TRANSPORT_TYPES);
 
-  points.forEach((point) => transportDict[point.type] >= 0 ? ++transportDict[point.type] : ``);
+  points.forEach((point) => typesDictionary[point.type] >= 0 ? ++typesDictionary[point.type] : ``);
   const transportTypes = [];
-  const transportCount = [];
+  const transportCounts = [];
   Object
-    .entries(transportDict)
+    .entries(typesDictionary)
     .forEach(([key, value]) => {
       if (value > 0) {
         transportTypes.push(key);
-        transportCount.push(value);
+        transportCounts.push(value);
       }
     });
 
@@ -263,7 +219,7 @@ function renderTransportChart(ctx, points) {
       labels: transportTypes,
       datasets: [
         {
-          data: transportCount,
+          data: transportCounts,
           backgroundColor: `#ffffff`,
           hoverBackgroundColor: `#ffffff`,
           anchor: `start`,
@@ -326,4 +282,52 @@ function renderTransportChart(ctx, points) {
       },
     },
   });
+}
+
+export default class StatsView extends AbstractView {
+  constructor(points) {
+    super();
+    this._points = points;
+
+    this._moneyChart = null;
+    this._transportChart = null;
+
+    this._setCharts();
+  }
+
+  _getTemplate() {
+    return (
+      `<section class="statistics">
+      <h2 class="visually-hidden">Trip statistics</h2>
+
+      <div class="statistics__item statistics__item--money">
+        <canvas class="statistics__chart  statistics__chart--money" width="900"></canvas>
+      </div>
+
+      <div class="statistics__item statistics__item--transport">
+        <canvas class="statistics__chart  statistics__chart--transport" width="900"></canvas>
+      </div>
+
+      <div class="statistics__item statistics__item--time-spend">
+        <canvas class="statistics__chart  statistics__chart--time" width="900"></canvas>
+      </div>
+    </section>`
+    );
+  }
+
+  _setCharts() {
+    if (this._transportChart || this._moneyChart || this._timeSpendChart) {
+      this._transportChart = null;
+      this._moneyChart = null;
+      this._timeSpendChart = null;
+    }
+
+    const transportCtx = this.getElement().querySelector(`.statistics__chart--transport`).getContext(`2d`);
+    const moneyCtx = this.getElement().querySelector(`.statistics__chart--money`).getContext(`2d`);
+    const timeCtx = this.getElement().querySelector(`.statistics__chart--time`).getContext(`2d`);
+
+    this._transportChart = renderTransportChart(transportCtx, this._points);
+    this._moneyChart = renderMoneyChart(moneyCtx, this._points);
+    this._timeSpendChart = renderSpentTimeChart(timeCtx, this._points);
+  }
 }

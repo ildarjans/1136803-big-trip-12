@@ -4,7 +4,7 @@ import {
   getEventDurationString,
   getCustomTimeString
 } from '../../utils/date.js';
-import {capitalizeString as capitalize} from '../../utils/common.js';
+import {capitalizeString as capitalize} from '../../utils/trip.js';
 
 import {POINT_TYPE_PREFIXES, OFFER_ITEM_VIEW_LIMIT} from '../../consts.js';
 

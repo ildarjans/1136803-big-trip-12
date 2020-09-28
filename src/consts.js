@@ -48,6 +48,13 @@ export const BLANK_EVENT = {
   type: `train`
 };
 
+export const TimeUnitInMs = {
+  SECOND: 1000,
+  MINUTE: 60000,
+  HOUR: 3600000,
+  DAY: 86400000,
+};
+
 export const PointMode = {
   DEFAULT: `DEFAULT`,
   EDIT: `EDIT`
@@ -61,7 +68,8 @@ export const MenuTabs = {
 export const FormState = {
   ABORTING: `ABORTING`,
   DELETING: `DELETING`,
-  SAVING: `SAVING`
+  FAVORITING: `FAVORITING`,
+  SAVING: `SAVING`,
 };
 
 export const FormType = {

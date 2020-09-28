@@ -1,5 +1,6 @@
 import moment from 'moment';
-import {FORM_MOMENT_DATE_FORMAT} from '../consts.js';
+import {FORM_MOMENT_DATE_FORMAT, TimeUnitInMs as TimeUnit} from '../consts.js';
+
 
 function getCustomDateObject(date, ...literals) {
   const fnLiterals = {
@@ -45,15 +46,11 @@ function calcTimeDiff(date1, date2) {
   if (date2 < date1) {
     [date1, date2] = [date2, date1];
   }
-  const S = 1000;
-  const m = S * 60;
-  const h = m * 60;
-  const d = h * 24;
-
   const diff = date2.valueOf() - date1.valueOf();
-  const days = Math.floor(diff / d);
-  const hours = Math.floor((diff - days * d) / h);
-  const minutes = Math.floor((diff - days * d - hours * h) / m);
+  const days = Math.floor(diff / TimeUnit.DAY);
+  const hours = Math.floor((diff - days * TimeUnit.DAY) / TimeUnit.HOUR);
+  const minutes = Math.floor(
+      (diff - days * TimeUnit.DAY - hours * TimeUnit.HOUR) / TimeUnit.MINUTE);
 
   return {days, hours, minutes};
 }
@@ -62,8 +59,8 @@ function getZeroPad(number) {
   return number < 10 ? `0${number}` : number;
 }
 
-function getMonthString(dateObj, long = false) {
-  return dateObj.toLocaleDateString(`en-US`, {month: long ? `long` : `short`});
+function getMonthString(date, long = false) {
+  return date.toLocaleDateString(`en-US`, {month: long ? `long` : `short`});
 }
 
 export function getTimeDiffString(date1, date2) {

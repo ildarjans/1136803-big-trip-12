@@ -20,9 +20,12 @@ export default class PointPresenter {
     this._componentWrapper = new PointItemView();
     this._pointItemComponent = null;
     this._pointFormComponent = null;
+
+    this._bindInnerHandlers();
+
   }
 
-  init(point) {
+  init(point, updateType) {
     this._point = point;
 
     const prevItemComponent = this._pointItemComponent;
@@ -31,7 +34,6 @@ export default class PointPresenter {
     this._pointItemComponent = new PointEventView(point);
     this._pointFormComponent = new PointFormView(point, this._offers, this._destinations);
 
-    this._bindInnerHandlers();
     this._setInnetHandlers();
 
     if (!prevItemComponent || !prevFormComponent) {
@@ -45,8 +47,12 @@ export default class PointPresenter {
         replaceDOMElement(this._pointItemComponent, prevItemComponent);
         break;
       case PointMode.EDIT:
-        replaceDOMElement(this._pointItemComponent, prevFormComponent);
-        this._mode = PointMode.DEFAULT;
+        if (updateType === UpdateType.PATCH) {
+          replaceDOMElement(this._pointFormComponent, prevFormComponent);
+        } else {
+          replaceDOMElement(this._pointItemComponent, prevFormComponent);
+          this._mode = PointMode.DEFAULT;
+        }
         break;
     }
 
@@ -54,15 +60,16 @@ export default class PointPresenter {
     removeElement(prevFormComponent);
   }
 
+  setDefaultMode() {
+    if (this._mode === PointMode.EDIT) {
+      this._pointFormComponent.reset(this._point);
+      this._switchToPointItem();
+    }
+  }
 
-  _resetFormViewState() {
-    this._pointFormComponent.updateData({
-      state: {
-        isDisabled: false,
-        isSaving: false,
-        isDeleting: false
-      }
-    });
+  resetComponent() {
+    removeElement(this._pointItemComponent);
+    removeElement(this._pointFormComponent);
   }
 
   setFormViewState(state) {
@@ -97,22 +104,9 @@ export default class PointPresenter {
     this._switchToPointItem = this._switchToPointItem.bind(this);
     this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._submitClickHandler = this._submitClickHandler.bind(this);
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._resetFormViewState = this._resetFormViewState.bind(this);
 
-  }
-
-  _setInnetHandlers() {
-    this._pointItemComponent.setDropdownClickHandler(this._switchToPointForm);
-    this._pointFormComponent.setSubmitClickHandler(this._submitClickHandler);
-    this._pointFormComponent.setDeleteClickHandler(this._deleteClickHandler);
-  }
-
-  _windowEscHandler(evt) {
-    if (evt.key === `Escape` || evt.key === `Esc`) {
-      evt.preventDefault();
-      this._pointFormComponent.reset(this._point);
-      this._switchToPointItem();
-    }
   }
 
   _deleteClickHandler(point) {
@@ -122,6 +116,41 @@ export default class PointPresenter {
         point
     );
     window.removeEventListener(`keydown`, this._windowEscHandler);
+  }
+
+  _favoriteClickHandler(point) {
+    this._changeData(
+        UserAction.UPDATE_POINT,
+        UpdateType.PATCH,
+        point
+    );
+  }
+
+  _hasChange(update) {
+    return (
+      this._point.dateFrom !== update.dateFrom ||
+      this._point.dateTo !== update.dateTo ||
+      this._point.type !== update.type ||
+      this._point.basePrice !== update.basePrice ||
+      this._point.destination.name !== update.destination.name ||
+      this._point.offers.length !== update.offers.length ||
+      this._point.isFavorite !== update.isFavorite ||
+      (
+        this._point.length !== 0 &&
+        !this._point.offers.every((offer, index) => offer.title === update.offers[index].title)
+      )
+    );
+  }
+
+  _resetFormViewState() {
+    this._pointFormComponent.updateData({
+      state: {
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+        isFavoriting: false
+      }
+    });
   }
 
   _switchToPointForm() {
@@ -137,6 +166,7 @@ export default class PointPresenter {
     this._mode = PointMode.DEFAULT;
   }
 
+
   _submitClickHandler(point) {
     if (this._hasChange(point)) {
       this._changeData(
@@ -144,34 +174,24 @@ export default class PointPresenter {
           UpdateType.MINOR,
           point
       );
-    }
-  }
-
-  _hasChange(update) {
-    return (
-      this._point.dateFrom !== update.dateFrom ||
-      this._point.dateTo !== update.dateTo ||
-      this._point.type !== update.type ||
-      this._point.basePrice !== update.basePrice ||
-      this._point.destination.name !== update.destination.name ||
-      this._point.offers.length !== update.offers.length ||
-      (
-        this._point.length !== 0 &&
-        !this._point.offers.every((offer, index) => offer.title === update.offers[index].title)
-      )
-    );
-  }
-
-  setDefaultMode() {
-    if (this._mode === PointMode.EDIT) {
-      this._pointFormComponent.reset(this._point);
+    } else {
       this._switchToPointItem();
     }
   }
 
-  resetComponent() {
-    removeElement(this._pointItemComponent);
-    removeElement(this._pointFormComponent);
+  _setInnetHandlers() {
+    this._pointItemComponent.setDropdownClickHandler(this._switchToPointForm);
+    this._pointFormComponent.setSubmitClickHandler(this._submitClickHandler);
+    this._pointFormComponent.setFavoriteClickHandler(this._favoriteClickHandler);
+    this._pointFormComponent.setDeleteClickHandler(this._deleteClickHandler);
+  }
+
+  _windowEscHandler(evt) {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      evt.preventDefault();
+      this._pointFormComponent.reset(this._point);
+      this._switchToPointItem();
+    }
   }
 
 }
