@@ -134,7 +134,6 @@ export default class PointPresenter {
       this._point.basePrice !== update.basePrice ||
       this._point.destination.name !== update.destination.name ||
       this._point.offers.length !== update.offers.length ||
-      this._point.isFavorite !== update.isFavorite ||
       (
         this._point.length !== 0 &&
         !this._point.offers.every((offer, index) => offer.title === update.offers[index].title)
@@ -148,7 +147,6 @@ export default class PointPresenter {
         isDisabled: false,
         isSaving: false,
         isDeleting: false,
-        isFavoriting: false
       }
     });
   }
