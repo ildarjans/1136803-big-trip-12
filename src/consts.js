@@ -68,7 +68,6 @@ export const MenuTabs = {
 export const FormState = {
   ABORTING: `ABORTING`,
   DELETING: `DELETING`,
-  FAVORITING: `FAVORITING`,
   SAVING: `SAVING`,
 };
 

@@ -60,14 +60,9 @@ export default class TripPresenter {
     return this._pointsContainer;
   }
 
-  get newPointPresenter() {
-    return this._newPointPresenter;
-  }
-
   set menuPresenter(menuPresenter) {
     this._menuPresenter = menuPresenter;
   }
-
 
   init() {
     this._renderTrip();
@@ -260,10 +255,6 @@ export default class TripPresenter {
   _renderEmptyMessage() {
     this._emptyMessageComponent = new PointMessageView(EVENT_EMPTY_MESSAGES);
     renderLastPlaceElement(this._pointsContainer, this._emptyMessageComponent);
-  }
-
-  _renderDaysList() {
-    renderLastPlaceElement(this._pointsContainer, this._daysListComponent);
   }
 
   _renderDayItem() {

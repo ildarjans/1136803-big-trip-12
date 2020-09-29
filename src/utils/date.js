@@ -18,7 +18,7 @@ function getCustomDateObject(date, ...literals) {
   }
 
   if (Object.prototype.toString.call(date) !== `[object Date]`) {
-    throw new Error(`first parametr must be Date object`);
+    throw new Error(`first parameter must be Date object`);
   }
   const result = {};
   if (!literals.length) {
@@ -42,39 +42,12 @@ function getCustomDateObject(date, ...literals) {
   return result;
 }
 
-function calcTimeDiff(date1, date2) {
-  if (date2 < date1) {
-    [date1, date2] = [date2, date1];
-  }
-  const diff = date2.valueOf() - date1.valueOf();
-  const days = Math.floor(diff / TimeUnit.DAY);
-  const hours = Math.floor((diff - days * TimeUnit.DAY) / TimeUnit.HOUR);
-  const minutes = Math.floor(
-      (diff - days * TimeUnit.DAY - hours * TimeUnit.HOUR) / TimeUnit.MINUTE);
-
-  return {days, hours, minutes};
-}
-
 function getZeroPad(number) {
   return number < 10 ? `0${number}` : number;
 }
 
 function getMonthString(date, long = false) {
   return date.toLocaleDateString(`en-US`, {month: long ? `long` : `short`});
-}
-
-export function getTimeDiffString(date1, date2) {
-  const {days, hours, minutes} = calcTimeDiff(date1, date2);
-
-  const d = `${getZeroPad(days)}`;
-  const h = `${getZeroPad(hours)}`;
-  const m = `${getZeroPad(minutes)}`;
-
-  return (
-    `${ d !== `00` ? `${d}D` : ``}\
-    ${ h !== `00` ? `${h}H` : ``}\
-    ${ m !== `00` ? `${m}M` : ``}`
-  ).trim();
 }
 
 export function isSameDate(date1, date2) {

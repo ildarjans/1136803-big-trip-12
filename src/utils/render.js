@@ -37,16 +37,16 @@ export function getAbstractClassDOMElement(element) {
     element;
 }
 
-export function replaceDOMElement(newChild, oldСhild) {
+export function replaceDOMElement(newChild, oldChild) {
   newChild = getAbstractClassDOMElement(newChild);
-  oldСhild = getAbstractClassDOMElement(oldСhild);
-  const parent = oldСhild.parentElement;
+  oldChild = getAbstractClassDOMElement(oldChild);
+  const parent = oldChild.parentElement;
 
-  if (!parent || !newChild || !oldСhild) {
+  if (!parent || !newChild || !oldChild) {
     throw new Error(`one of elements doesn't set`);
   }
 
-  parent.replaceChild(newChild, oldСhild);
+  parent.replaceChild(newChild, oldChild);
 }
 
 export function removeElement(element) {

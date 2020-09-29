@@ -23,7 +23,7 @@ export default class MenuPresenter {
     this._filterPresenter = new FilterPresenter(this._menuControls, this._pointModel, this._filterModel);
     this._menuTabs = new MenuTabsView();
     this._addEventButton = new AddPointView();
-    this._statsPresenter = new StatsPresenter(this._tripPresenter.container, this._pointModel, this._filterModel);
+    this._statsPresenter = new StatsPresenter(this._tripPresenter.container, this._pointModel);
 
     this._addNewPointClickHandler = this._addNewPointClickHandler.bind(this);
     this._tabsClickHandler = this._tabsClickHandler.bind(this);

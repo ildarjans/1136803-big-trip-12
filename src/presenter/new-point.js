@@ -21,10 +21,7 @@ export default class NewPointPresenter {
     this._changeMode = changeMode;
 
     this._pointFormComponent = null;
-    this._destroyCallback = null;
     this._bindInnerHandlers();
-
-    this._isActive = false;
 
   }
 
@@ -52,7 +49,6 @@ export default class NewPointPresenter {
 
     document.addEventListener(`keydown`, this._escKeyDownHandler);
 
-    this._isActive = true;
   }
 
   destroy() {

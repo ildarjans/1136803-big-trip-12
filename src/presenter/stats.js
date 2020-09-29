@@ -6,10 +6,9 @@ import {
 } from '../utils/render.js';
 
 export default class StatsPresenter {
-  constructor(pointsContainer, pointModel, filterModel) {
+  constructor(pointsContainer, pointModel) {
     this._container = pointsContainer;
     this._pointModel = pointModel;
-    this._filterModel = filterModel;
 
     this._statsComponent = null;
 

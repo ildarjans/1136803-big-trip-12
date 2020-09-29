@@ -296,8 +296,8 @@ function createPicturesTemplate(pictures) {
       `<img
         class="event__photo"
         src="${pic.src}"
-        alt="Event photo">
-      </img>`
+        alt="Event photo"
+      >`
     );
   }).join(``);
 }
@@ -504,9 +504,9 @@ export default class PointFormView extends SmartView {
         .some((name) => name === inputField.value);
 
     if (isValidCity) {
-      const selectedDesctination = this._destinations.all
+      const selectedDestination = this._destinations.all
         .filter((dest) => dest.name === inputField.value);
-      this._pointData.formData.destination = selectedDesctination[0];
+      this._pointData.formData.destination = selectedDestination[0];
       this.updateData(this._pointData);
       inputField.setCustomValidity(``);
     } else {
