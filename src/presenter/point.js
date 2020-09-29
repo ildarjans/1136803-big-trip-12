@@ -33,7 +33,6 @@ export default class PointPresenter {
       return;
     }
 
-
     const prevItemComponent = this._pointItemComponent;
     const prevFormComponent = this._pointFormComponent;
 

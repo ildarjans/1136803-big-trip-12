@@ -19,11 +19,12 @@ function createEventEditFormTemplate(point, offers, destinationNames, formType) 
   const {formData, state, isFavorite} = point;
   const {isDisabled, isSaving, isDeleting} = state;
 
-  const destination = createEditFormDestinations(formData.destination);
-  const pickDateFrom = getFormDateString(formData.dateFrom);
-  const pickDateTo = getFormDateString(formData.dateTo);
   const offersByType = offers.filter((offer) => offer.type === formData.type)[0].offers;
   const pickedOffers = formData.offers;
+  const destinationTemplate = createEditFormDestinations(formData.destination);
+  const offersTemplate = createFormOffersTemplate(offersByType, pickedOffers, isDisabled);
+  const pickDateFrom = getFormDateString(formData.dateFrom);
+  const pickDateTo = getFormDateString(formData.dateTo);
   const isSubmitDisabled = isDateBefore(formData.dateTo, formData.dateFrom);
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -126,16 +127,8 @@ function createEventEditFormTemplate(point, offers, destinationNames, formType) 
         ${formType === FormType.EDIT ? createFavoriteButton(isDisabled, isFavorite) : ``}
 
       </header>
-      <section class="event__details">
-        <section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-          <div class="event__available-offers">
-            ${createFormOffersTemplate(offersByType, pickedOffers, isDisabled)}
-          </div>
-        </section>
-      </section>
-      ${destination}
+      ${offersTemplate}
+      ${destinationTemplate}
     </form>`
   );
 }
@@ -205,7 +198,11 @@ function createEditFormDestinations(destination) {
 }
 
 function createFormOffersTemplate(offers, pickedOffers, isDisabled) {
-  return offers.map((offer) => {
+  if (!offers || offers.length === 0) {
+    return ``;
+  }
+
+  const offersInnerTemplate = offers.map((offer) => {
     const isPicked = pickedOffers.some((pick) => pick.title === offer.title);
     return (
       `<div class="event__offer-selector">
@@ -232,6 +229,18 @@ function createFormOffersTemplate(offers, pickedOffers, isDisabled) {
       </div>`
     );
   }).join(``);
+
+  return (
+    `<section class="event__details">
+      <section class="event__section  event__section--offers">
+        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+        <div class="event__available-offers">
+          ${offersInnerTemplate}
+        </div>
+      </section>
+    </section>`
+  );
+
 }
 
 function createCitiesListTemplate(destinationNames) {
@@ -297,7 +306,7 @@ function createPicturesTemplate(pictures) {
 export default class PointFormView extends SmartView {
   constructor(point, offers, destinations, formType = FormType.EDIT) {
     super();
-    this._pointData = PointFormView.parsePointToData(point);
+    this._pointData = PointFormView.getCustomPointData(point);
     this._offers = offers;
     this._destinations = destinations;
     this._formType = formType;
@@ -309,11 +318,19 @@ export default class PointFormView extends SmartView {
   }
 
   reset(point) {
-    this.updateData(PointFormView.parsePointToData(point));
+    this.updateData(PointFormView.getCustomPointData(point));
   }
 
   resetFavoriteOnly(point) {
-    this.updateData(PointFormView.parsePointFavoritePropertyToData(this._pointData, point));
+    this.updateData(
+        Object.assign(
+            {},
+            this._pointData,
+            {
+              isFavorite: point.isFavorite
+            }
+        )
+    );
   }
 
   setDeleteClickHandler(cb) {
@@ -370,7 +387,7 @@ export default class PointFormView extends SmartView {
     evt.preventDefault();
     this._pointData.isFavorite = evt.target.checked;
     this.updateData(this._pointData, true);
-    this._callbacks.favorite(PointFormView.parseServerDataToPoint(this._pointData));
+    this._callbacks.favorite(PointFormView.getOriginalDataPoint(this._pointData));
   }
 
   _eventTypeClickHandler(evt) {
@@ -379,6 +396,7 @@ export default class PointFormView extends SmartView {
       this._pointData.formData.type = (evt.target.value).toLowerCase();
       this._pointData.formData.offers = [];
       this.updateData(this._pointData);
+      this._setOffersChangeClickHandler();
     }
     this.validateForm();
   }
@@ -421,12 +439,8 @@ export default class PointFormView extends SmartView {
   _setInnerHandlers() {
     const self = this.getElement();
     this._setDatePicker();
-
-    if (this._formType === FormType.EDIT) {
-      self
-      .querySelector(`.event__favorite-checkbox`)
-      .addEventListener(`click`, this._favoriteClickHandler);
-    }
+    this._setFavoriteClickHandler();
+    this._setOffersChangeClickHandler();
 
     self
       .querySelector(`.event__type-list`)
@@ -435,9 +449,6 @@ export default class PointFormView extends SmartView {
       .querySelector(`.event__input--price`)
       .addEventListener(`change`, this._priceChangeHandler);
     self
-      .querySelector(`.event__section--offers`)
-      .addEventListener(`change`, this._offersChangeHandler);
-    self
       .addEventListener(`submit`, this._submitClickHandler);
     self
       .querySelector(`.event__reset-btn`)
@@ -445,6 +456,25 @@ export default class PointFormView extends SmartView {
     self
       .querySelector(`.event__input--destination`)
       .addEventListener(`change`, this._destinationChangeHandler);
+  }
+
+  _setFavoriteClickHandler() {
+    if (this._formType === FormType.EDIT) {
+      this.getElement()
+      .querySelector(`.event__favorite-checkbox`)
+      .addEventListener(`click`, this._favoriteClickHandler);
+    }
+  }
+
+  _setOffersChangeClickHandler() {
+    const availableOffers = this._offers.filter((offer) => {
+      return offer.type === this._pointData.formData.type;
+    })[0].offers;
+    if (availableOffers.length > 0) {
+      this.getElement()
+      .querySelector(`.event__section--offers`)
+      .addEventListener(`change`, this._offersChangeHandler);
+    }
   }
 
   _setDatePicker() {
@@ -466,7 +496,7 @@ export default class PointFormView extends SmartView {
 
   _submitClickHandler(evt) {
     evt.preventDefault();
-    this._callbacks.submit(PointFormView.parseEntireDataToPoint(this._pointData));
+    this._callbacks.submit(PointFormView.getMergedOriginalDataPoint(this._pointData));
   }
 
   _validateDestination(inputField) {
@@ -484,7 +514,7 @@ export default class PointFormView extends SmartView {
     }
   }
 
-  static parsePointToData(point) {
+  static getCustomPointData(point) {
     return Object.assign(
         {},
         point,
@@ -506,17 +536,7 @@ export default class PointFormView extends SmartView {
     );
   }
 
-  static parsePointFavoritePropertyToData(previousPoint, point) {
-    return Object.assign(
-        {},
-        previousPoint,
-        {
-          isFavorite: point.isFavorite
-        }
-    );
-  }
-
-  static parseEntireDataToPoint(pointData) {
+  static getMergedOriginalDataPoint(pointData) {
     const point = Object.assign(
         {},
         pointData,
@@ -528,7 +548,7 @@ export default class PointFormView extends SmartView {
     return point;
   }
 
-  static parseServerDataToPoint(pointData) {
+  static getOriginalDataPoint(pointData) {
     const point = Object.assign(
         {},
         pointData
