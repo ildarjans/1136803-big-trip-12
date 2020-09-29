@@ -1,5 +1,5 @@
 import moment from 'moment';
-import {FORM_MOMENT_DATE_FORMAT, TimeUnitInMs as TimeUnit} from '../consts.js';
+import {FORM_MOMENT_DATE_FORMAT} from '../consts.js';
 
 
 function getCustomDateObject(date, ...literals) {
