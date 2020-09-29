@@ -3,7 +3,7 @@ import AbstractView from './abstract.js';
 export default class SmartView extends AbstractView {
   constructor() {
     super();
-    this._data = {};
+    this._pointData = {};
   }
 
   updateElement() {
@@ -22,7 +22,7 @@ export default class SmartView extends AbstractView {
       return;
     }
 
-    Object.assign(this._data, update);
+    Object.assign(this._pointData, update);
 
     if (justDataUpdate) {
       return;

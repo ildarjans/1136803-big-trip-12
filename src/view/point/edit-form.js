@@ -16,7 +16,7 @@ import flatpickr from 'flatpickr';
 import '../../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 function createEventEditFormTemplate(point, offers, destinationNames, formType) {
-  const {formData, state} = point;
+  const {formData, state, isFavorite} = point;
   const {isDisabled, isSaving, isDeleting} = state;
 
   const destination = createEditFormDestinations(formData.destination);
@@ -123,7 +123,7 @@ function createEventEditFormTemplate(point, offers, destinationNames, formType) 
         </button>
 
         ${formType === FormType.EDIT ? createDeleteButton(isDisabled, isDeleting) : createCancelButton(isDisabled)}
-        ${formType === FormType.EDIT ? createFavoriteButton(isDisabled, formData.isFavorite) : ``}
+        ${formType === FormType.EDIT ? createFavoriteButton(isDisabled, isFavorite) : ``}
 
       </header>
       <section class="event__details">
@@ -312,6 +312,10 @@ export default class PointFormView extends SmartView {
     this.updateData(PointFormView.parsePointToData(point));
   }
 
+  resetFavoriteOnly(point) {
+    this.updateData(PointFormView.parsePointFavoritePropertyToData(this._pointData, point));
+  }
+
   setDeleteClickHandler(cb) {
     this._callbacks.delete = cb;
   }
@@ -364,9 +368,9 @@ export default class PointFormView extends SmartView {
 
   _favoriteClickHandler(evt) {
     evt.preventDefault();
-    this._pointData.formData.isFavorite = evt.target.checked;
+    this._pointData.isFavorite = evt.target.checked;
     this.updateData(this._pointData, true);
-    this._callbacks.favorite(PointFormView.parseDataToPoint(this._pointData));
+    this._callbacks.favorite(PointFormView.parseServerDataToPoint(this._pointData));
   }
 
   _eventTypeClickHandler(evt) {
@@ -462,7 +466,7 @@ export default class PointFormView extends SmartView {
 
   _submitClickHandler(evt) {
     evt.preventDefault();
-    this._callbacks.submit(PointFormView.parseDataToPoint(this._pointData));
+    this._callbacks.submit(PointFormView.parseEntireDataToPoint(this._pointData));
   }
 
   _validateDestination(inputField) {
@@ -487,7 +491,6 @@ export default class PointFormView extends SmartView {
         {
           formData: {
             basePrice: point.basePrice,
-            isFavorite: point.isFavorite,
             dateFrom: point.dateFrom,
             dateTo: point.dateTo,
             type: point.type,
@@ -503,11 +506,32 @@ export default class PointFormView extends SmartView {
     );
   }
 
-  static parseDataToPoint(pointData) {
+  static parsePointFavoritePropertyToData(previousPoint, point) {
+    return Object.assign(
+        {},
+        previousPoint,
+        {
+          isFavorite: point.isFavorite
+        }
+    );
+  }
+
+  static parseEntireDataToPoint(pointData) {
     const point = Object.assign(
         {},
         pointData,
         pointData.formData
+    );
+
+    delete point.state;
+    delete point.formData;
+    return point;
+  }
+
+  static parseServerDataToPoint(pointData) {
+    const point = Object.assign(
+        {},
+        pointData
     );
 
     delete point.state;

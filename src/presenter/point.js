@@ -28,6 +28,12 @@ export default class PointPresenter {
   init(point, updateType) {
     this._point = point;
 
+    if (updateType === UpdateType.PATCH && this._pointFormComponent) {
+      this._pointFormComponent.resetFavoriteOnly(point);
+      return;
+    }
+
+
     const prevItemComponent = this._pointItemComponent;
     const prevFormComponent = this._pointFormComponent;
 
@@ -47,12 +53,8 @@ export default class PointPresenter {
         replaceDOMElement(this._pointItemComponent, prevItemComponent);
         break;
       case PointMode.EDIT:
-        if (updateType === UpdateType.PATCH) {
-          replaceDOMElement(this._pointFormComponent, prevFormComponent);
-        } else {
-          replaceDOMElement(this._pointItemComponent, prevFormComponent);
-          this._mode = PointMode.DEFAULT;
-        }
+        replaceDOMElement(this._pointItemComponent, prevFormComponent);
+        this._mode = PointMode.DEFAULT;
         break;
     }
 
